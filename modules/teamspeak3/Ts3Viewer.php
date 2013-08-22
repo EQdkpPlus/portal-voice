@@ -22,7 +22,7 @@ if ( !defined('EQDKP_INC') ){
 
 class Ts3Viewer extends gen_class {
 	public static $shortcuts = array();
-	protected $ip, $port, $t_port, $info, $error, $alert, $timeout, $fp, $plist, $clist, $sinfo, $connected, $noError;
+	protected $ip, $port, $t_port, $info, $error, $alert, $timeout, $fp, $plist, $clist, $sinfo, $connected, $noError, $cgroups, $sgroups;
 	private $config = array();
 	
 	public function __construct($arrConfig) {
@@ -91,7 +91,7 @@ class Ts3Viewer extends gen_class {
 		//Show a statistic box under the TS viewer. - Yes=1 / No=0
 		//Zeigt eine Statistikbox unter dem TS Viewer - Ja=1 / Nein=0
 		$this->info['stats'] = $this->config('pk_ts3_stats');
-
+		
 		//You can choose wich serverinfos will shown and change the label - Yes=1 / No=0
 		//Du kannst Auswählen welcheServerinfo gezeigt werden soll und welche nicht. Ausserdem kannst Du die Bezeichnung ändern
 		
@@ -109,32 +109,6 @@ class Ts3Viewer extends gen_class {
 
 		$this->info['serverinfo']['virtualserver_created']['show'] = $this->config('pk_ts3_stats_install'); //Show when the server was installed
 		$this->info['serverinfo']['virtualserver_created']['label'] = 'Online since';
-
-		//Server Groups
-
-		//to add a group you have to make 2 entries, ts3_replace NAME with the name of the group,
-		//ID with the Group ID (you find the ID under Server Groups) and PIC with the name of
-		//the groupimage (copy the image in the images folder. The size from the image should
-		//be 16 x 16
-		//$this->info['sgroup'][ID]['n'] = 'NAME';
-		//$this->info['sgroup'][ID]['p'] = 'PIC';
-		
-		//um eine Gruppe hinzuzufügen, änder NAME in den Namen der Gruppe,
-		//ID in die Gruppen ID (siehst du im Clienten unter Server Groups) und PIC mit dme Namen 
-		//des Gruppenbild (kopiere das bild in den image Ordner, die größe sollte nicht mehr als 16px x 16px
-		//betragen
-		//$this->info['sgroup'][ID]['n'] = 'NAME';
-		//$this->info['sgroup'][ID]['p'] = 'PIC';
-
-		$this->info['sgroup'][6]['n'] = 'Serveradmin';
-		$this->info['sgroup'][6]['p'] = 'sa.png';
-
-		//CHANNEL GROUPS
-		$this->info['cgroup'][5]['n'] = 'Channeladmin';
-		$this->info['cgroup'][5]['p'] = 'ca.png';
-
-		$this->info['cgroup'][6]['n'] = 'Channel Operator';
-		$this->info['cgroup'][6]['p'] = 'co.png';
 	}
 	
 	public function __destruct() {
@@ -205,6 +179,8 @@ class Ts3Viewer extends gen_class {
 		//do a normal query of relevant server information
 		$this->set_sid();
 		$this->query_sinfo();
+		$this->query_sgroups();
+		$this->query_cgroups();
 		$this->query_channels();
 		$this->query_clients();
 	}
@@ -268,22 +244,40 @@ class Ts3Viewer extends gen_class {
 					}else{
 						$temp[0] = $var['client_servergroups'];
 					}
-					$t = '0';
-					foreach ($temp as $t_var) {
-						if($t_var == '6'){
-							$t = '1';
-						}
-					}
-					if($t == '1'){
-						$this->plist[$key]['s_admin'] = '1';
-					}else{
-						$this->plist[$key]['s_admin'] = '0';
-					}
+					$this->plist[$key]['client_servergroups'] = $temp;
 				}
 				usort($this->plist, "ts3_cmp_group");
 				usort($this->plist, "ts3_cmp_admin");
 			}
 
+		}
+	}
+	
+	protected function query_cgroups(){
+		if (!($this->connected and $this->noError)) {return;}
+		$cmd = "channelgrouplist\n";
+		if(!($plist_t = $this->sendCmd($cmd))){
+			$this->error[] = 'No Grouplist';
+		}else{
+			$plist_t = $this->splitInfo2($plist_t);
+			foreach ($plist_t as $var) {
+				$arr = $this->splitInfo($var);
+				$this->cgroups[$arr['cgid']] = $arr;
+			}
+		}
+	}
+	
+	protected function query_sgroups(){
+		if (!($this->connected and $this->noError)) {return;}
+		$cmd = "servergrouplist\n";
+		if(!($plist_t = $this->sendCmd($cmd))){
+			$this->error[] = 'No Grouplist';
+		}else{
+			$plist_t = $this->splitInfo2($plist_t);
+			foreach ($plist_t as $var) {
+				$arr = $this->splitInfo($var);
+				$this->sgroups[$arr['sgid']] = $arr;
+			}
 		}
 	}
 
@@ -446,20 +440,26 @@ class Ts3Viewer extends gen_class {
 											$p_img = 'away.png';
 										}
 										$g_img = '';
-										$g_temp = '';
-										if(strpos($u_var['client_servergroups'], ',') !== FALSE){
-											$g_temp = explode(',', $u_var['client_servergroups']);
-										}else{
-											$g_temp[0] = $u_var['client_servergroups'];
-										}
-										foreach ($g_temp as $sg_var) {
-											if(isset($this->info['sgroup'][$sg_var]['p'])){
-												$g_img .= '<div class="tsca" style="float:right"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$this->info['sgroup'][$sg_var]['p'].'" alt="'.$this->info['sgroup'][$sg_var]['n'].'" /></div>';
+										$arrIcons = $arrGroups = array();
+										foreach ($u_var['client_servergroups'] as $sg_var) {
+											if (isset($this->sgroups[$sg_var])){
+												if ($this->sgroups[$sg_var]['iconid'] > 0) {
+													$arrIcons[] = $this->sgroups[$sg_var]['iconid'];
+													$arrGroups[(int)$this->sgroups[$sg_var]['iconid']] = $this->replace($this->sgroups[$sg_var]['name']);
+												}								
 											}
 										}
-										if(isset($this->info['cgroup'][$u_var['client_channel_group_id']]['p'])){
-											if(isset($this->info['cgroup'][$u_var['client_channel_group_id']]['p'])){
-												$g_img .= '<div class="tsca" style="float:right"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$this->info['cgroup'][$u_var['client_channel_group_id']]['p'].'" alt="'.$this->info['cgroup'][$u_var['client_channel_group_id']]['n'].'" /></div>';
+										if (isset($this->cgroups[$u_var['client_channel_group_id']])){
+											if ($this->cgroups[$u_var['client_channel_group_id']]['iconid'] > 0) {
+												$arrIcons[] = $this->cgroups[$u_var['client_channel_group_id']]['iconid'];
+												$arrGroups[intval($this->cgroups[$u_var['client_channel_group_id']]['iconid'])] = $this->replace($this->cgroups[$u_var['client_channel_group_id']]['name']);
+											}
+										}
+										arsort($arrIcons);
+										$arrIcons = array_unique($arrIcons);
+										foreach($arrIcons as $iconid){
+											if(is_file($this->root_path.'portal/voice/modules/teamspeak3/tsimages/group_icon_'.intval($iconid).'.png')){
+												$g_img .= '<div class="tsca" style="float:right"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/group_icon_'.intval($iconid).'.png" alt="'.$arrGroups[intval($iconid)].'" title="'.$arrGroups[intval($iconid)].'"/></div>';
 											}
 										}
 										$return .= $platzhalter.'<div class="tsleer">&nbsp;</div><div class="tsleer">&nbsp;</div><div class="tsca"><img src="'.$this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$p_img.'" alt="Player" /></div><div class="tsna">'.htmlspecialchars($this->cut_names($u_var['client_nickname'],$this->info), ENT_COMPAT | ENT_HTML401, 'UTF-8').'</div>'.$g_img.'<div style="clear:both"></div>';
