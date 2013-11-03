@@ -31,6 +31,7 @@ class voice_portal extends portal_generic {
 		'name'			=> 'Voice Server',
 		'version'		=> '0.1.0',
 		'author'		=> 'GodMod',
+		'icon'			=> 'fa-microphone',
 		'contact'		=> EQDKP_PROJECT_URL,
 		'description'	=> 'Voice Server',
 	);
