@@ -36,7 +36,7 @@ class voice_portal extends portal_generic {
 	protected static $positions = array('left1', 'left2', 'right');
 	
 	public $LoadSettingsOnchangeVisibility = true;
-
+	// TODO: Hoofy: Settings gehen nicht wie es soll. Man wählt TS3 aus, aber er läd die neuen nicht nach
 	public function get_settings($state){
 		$settings	= array(
 			'module'	=> array(
