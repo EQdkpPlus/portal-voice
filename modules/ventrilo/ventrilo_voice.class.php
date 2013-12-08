@@ -28,7 +28,7 @@ if(!class_exists("ventrilo_voice")) {
 		}
 		
 		public function output() {
-			return '<iframe src="http://vspy.guildlaunch.net/srv/minispy.php?Address=' . $this->config('pk_ventrilo_server') . '&Port=' . $this->config('pk_ventrilo_port') . '&J=&Scroll=&T=8&E=&Main=&Color=' . $this->config('pk_ventrilo_backgroundc') . '&S=' . $this->config('pk_ventrilo_servercolor') . '&C=' . $this->config('pk_ventrilo_channelc') . '&U=' . $this->config('pk_ventrilo_usercolor') . '&Names=&Compact=" width="200" height="300" frameborder="0"></iframe>';
+			return '<iframe src="http://vspy.guildlaunch.net/srv/minispy.php?Address=' . $this->config('ventrilo_server') . '&Port=' . $this->config('ventrilo_port') . '&J=&Scroll=&T=8&E=&Main=&Color=' . $this->config('ventrilo_backgroundc') . '&S=' . $this->config('ventrilo_servercolor') . '&C=' . $this->config('ventrilo_channelc') . '&U=' . $this->config('ventrilo_usercolor') . '&Names=&Compact=" width="200" height="300" frameborder="0"></iframe>';
 		}
 		
 		private function config($strKey){

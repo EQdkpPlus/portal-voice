@@ -30,7 +30,7 @@ class teamspeak3_voice extends gen_class {
 	}
 
 	public function output() {
-		$cachetime = ($this->config('pk_ts3_cache')) ? $this->config('pk_ts3_cache') : '30'; //default cachetime = 30 seconds
+		$cachetime = ($this->config('ts3_cache')) ? $this->config('ts3_cache') : '30'; //default cachetime = 30 seconds
 		
 		$this->tpl->css_file($this->root_path . 'portal/voice/modules/teamspeak3/ts3view.css');
 		
