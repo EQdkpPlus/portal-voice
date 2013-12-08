@@ -230,9 +230,5 @@ class voice_portal extends portal_generic {
 		$this->header = $this->user->lang($strModule);
 		return $out;
 	}
-	
-	public function reset(){
-		$this->pdc->del_prefix("portal.modul.voice");
-	}
 }
 ?>
