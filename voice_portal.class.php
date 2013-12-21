@@ -35,18 +35,16 @@ class voice_portal extends portal_generic {
 	);
 	protected static $positions = array('left1', 'left2', 'right');
 	
-	public $LoadSettingsOnchangeVisibility = true;
-	// TODO: Hoofy: Settings gehen nicht wie es soll. Man wählt TS3 aus, aber er läd die neuen nicht nach
 	public function get_settings($state){
 		$settings	= array(
 			'module'	=> array(
 				'type'		=> 'dropdown',
+				'class'		=> 'js_reload',
 				'options'	=> array(
 					'ts3'		=> 'Teamspeak 3',
 					'mumble'	=> 'Mumble',
 					'ventrilo'	=> 'Ventrilo',
 				),
-				'class'		=> 'onchange="load_settings()"',
 			),
 		);
 		
@@ -75,23 +73,17 @@ class voice_portal extends portal_generic {
 					'size'		=> '2',
 				),
 				'ts3_banner'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 				'ts3_join'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 				'ts3_jointext'		=> array(
 					'type'		=> 'text',
 					'size'		=> '30',
 				),
 				'ts3_legend'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 				'ts3_cut_names'		=> array(
 					'type'		=> 'text',
@@ -102,53 +94,35 @@ class voice_portal extends portal_generic {
 					'size'		=> '2',
 				),
 				'only_populated_channel'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 				'ts3_useron'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 				'ts3_stats'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 				'ts3_stats_showos'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
-				's3_stats_version'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+				'ts3_stats_version'		=> array(
+					'type'		=> 'radio',
 				),
 				'ts3_stats_numchan'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 				'ts3_stats_uptime'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 				'ts3_stats_install'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 				'ts3_timeout'		=> array(
 					'type'		=> 'text',
 					'size'		=> '20',
 				),
 				'ts3_hide_spacer'		=> array(
-					'type'		=> 'checkbox',
-					'size'		=> false,
-					'options'	=> false,
+					'type'		=> 'radio',
 				),
 			);
 			$settings = array_merge($settings, $ts3_settings);
