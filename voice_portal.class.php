@@ -183,7 +183,7 @@ class voice_portal extends portal_generic {
 		$arrSettingsArray = $this->get_settings('fetch_new');
 		$arrOptions = array();
 		foreach($arrSettingsArray as $key => $value){
-			$arrOptions[$value['name']] = $this->config($value['name']);
+			$arrOptions[$key] = $this->config($key);
 		}
 		
 		$out = "";
