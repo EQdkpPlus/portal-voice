@@ -55,7 +55,7 @@ class Ts3Viewer extends gen_class {
 		// Die ID deines Server - Standart - 1
 		$this->sid = ($this->config('ts3_id') == '') ? '1' : $this->config('ts3_id');
 		
-		$this->info['hide_spacer'] = (int)$this->config('ts3_hide_spacer');
+		$this->info['hide_spacer'] = !(int)$this->config('ts3_show_spacer');
 		
 		// Shows banner if URL is avaible in TS - Yes=1 / No=0
 		// Zeige das Banner, welches du im TS eingestellt hast - Ja=1 / Nein=0

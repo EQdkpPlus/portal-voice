@@ -62,7 +62,7 @@ $lang = array(
 	'voice_f_ts3_stats_install'		=> 'Zeige das Installationsdatum des Servers in der Statistikbox?',
 	'voice_f_ts3_timeout'			=> 'Timeout (NICHT ändern)',
 	'voice_f_help_ts3_timeout'		=> 'Dieses Feld dringend leer lassen, es sei denn du weißt ganz genau was du tust!',
-	'voice_f_ts3_hide_spacer'		=> 'Channel-Spacer nicht anzeigen',
+	'voice_f_ts3_show_spacer'		=> 'Zeige Channel-Spacer an',
 
 	//Ventrilo
 	'ventrilo'						=> 'Ventrilo',

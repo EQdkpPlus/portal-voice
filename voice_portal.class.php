@@ -49,6 +49,7 @@ class voice_portal extends portal_generic {
 		);
 		
 		$strModule = $this->config('module');
+		if (!strlen($strModule)) $strModule = "ts3";
 		
 		if ($strModule == 'ts3'){
 			$ts3_settings	= array(
@@ -121,8 +122,9 @@ class voice_portal extends portal_generic {
 					'type'		=> 'text',
 					'size'		=> '20',
 				),
-				'ts3_hide_spacer'		=> array(
+				'ts3_show_spacer' => array(
 					'type'		=> 'radio',
+					'default'	=> 1,
 				),
 			);
 			$settings = array_merge($settings, $ts3_settings);
