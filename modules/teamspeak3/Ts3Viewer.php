@@ -557,7 +557,9 @@ class Ts3Viewer extends gen_class {
 			$count = strlen($var);
 			if($count > $this->info['ts3_cut_channel']){
 				$pos = $this->info['ts3_cut_channel']-3;
-				$var = substr($var, 0, $pos).'...';
+				if (function_exists("mb_substr")){
+					$var = mb_substr($var,0,$pos,'UTF-8').'...';
+				} else  $var = substr($var, 0, $pos).'...';
 
 			}
 		}
@@ -575,7 +577,9 @@ class Ts3Viewer extends gen_class {
 			$count = strlen($var);
 			if($count > $this->info['ts3_cut_names']){
 				$pos = $this->info['ts3_cut_names']-3;
-				$var = substr($var, 0, $pos).'...';
+				if (function_exists("mb_substr")){
+					$var = mb_substr($var,0,$pos,'UTF-8').'...';		
+				} else  $var = substr($var, 0, $pos).'...';
 			}
 		}
 		return $var;
