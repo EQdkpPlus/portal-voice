@@ -589,7 +589,7 @@ class Ts3Viewer extends gen_class {
 		//generates html-ouput for the group legend
 		$return = '';
 		if($this->info['legend'] == '1'){
-			$return .= '<div id="legend" ><h3>Legend</h3>';
+			$return .= '<div id="legend" ><h3>'.$this->user->lang('lang_ts3_legend').'</h3>';
 			foreach ($this->info['sgroup'] as $var) {
 				$return .= '<div class="tsle"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$var['p'].'" alt="'.$var['n'].'" /></div>';
 				$return .= '<div class="tsle">'.$var['n'].'</div>';
@@ -609,7 +609,7 @@ class Ts3Viewer extends gen_class {
 		//generates html-output for the number of user online in ts3
 		$return = '';
 		if($this->info['useron'] == 1 && isset($this->sinfo['virtualserver_clientsonline'])){
-			$return .= '<div class="useron">User online: '.($this->sinfo['virtualserver_clientsonline']-$this->sinfo['virtualserver_queryclientsonline']).'/'.$this->sinfo['virtualserver_maxclients'].' </div>';
+			$return .= '<div class="useron">'.$this->user->lang('lang_ts3_user_online').': '.($this->sinfo['virtualserver_clientsonline']-$this->sinfo['virtualserver_queryclientsonline']).'/'.$this->sinfo['virtualserver_maxclients'].' </div>';
 		}
 		return $return;
 	}
@@ -630,9 +630,10 @@ class Ts3Viewer extends gen_class {
 		$std = ($this->sinfo['virtualserver_uptime']/60/60)%24;
 		$min = ($this->sinfo['virtualserver_uptime']/60)%60;
 		$this->sinfo['virtualserver_created'] = date('d M Y', $this->sinfo['virtualserver_created']);
-		$this->sinfo['virtualserver_uptime'] = $tag.' Days '.$std.' Hours '.$min.' Min';
+		$uptimeLang = $this->user->lang('lang_ts3_uptime');
+		$this->sinfo['virtualserver_uptime'] = $tag.' '.$uptimeLang[0].' '.$std.' '.$uptimeLang[1].' '.$min.' '.$uptimeLang[2];
 		if($this->info['stats'] == 1){
-			$return .= '<div id="ts3stats"><h3>Statistic</h3><table>';
+			$return .= '<div id="ts3stats"><h3>'.$this->user->lang('lang_ts3_stats').'</h3><table>';
 			foreach ($this->info['serverinfo'] as $key => $var){
 				if($var['show'] == 1){
 					$return .= '<tr><td style="font-weight:bold">'.$var['label'].':</td><td>'.$this->replace($this->sinfo[$key]).'</td></tr>';

@@ -63,6 +63,10 @@ $lang = array(
 	'voice_f_ts3_timeout'			=> 'Timeout (NICHT ändern)',
 	'voice_f_help_ts3_timeout'		=> 'Dieses Feld dringend leer lassen, es sei denn du weißt ganz genau was du tust!',
 	'voice_f_ts3_show_spacer'		=> 'Zeige Channel-Spacer an',
+	'lang_ts3_user_online'			=> 'User online',	
+	'lang_ts3_stats'				=> 'Statistiken',
+	'lang_ts3_legend'				=> 'Legende',
+	'lang_ts3_uptime'				=> array('Tage', 'Stunden', 'Minuten'),
 
 	//Ventrilo
 	'ventrilo'						=> 'Ventrilo',
