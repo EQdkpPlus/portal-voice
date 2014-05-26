@@ -21,7 +21,6 @@ if ( !defined('EQDKP_INC') ){
 }
 
 class mumble_voice extends gen_class {
-	public static $shortcuts = array('core', 'config', 'tpl', 'pdc');
 	
 	private $config = array();
 	

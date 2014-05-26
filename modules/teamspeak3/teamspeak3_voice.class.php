@@ -21,8 +21,6 @@ if ( !defined('EQDKP_INC') ){
 }
 
 class teamspeak3_voice extends gen_class {
-	public static $shortcuts = array('core', 'pdc', 'config', 'tpl');
-	
 	private $config = array();
 	
 	public function __construct($arrOptions) {

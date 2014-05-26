@@ -21,7 +21,6 @@ if ( !defined('EQDKP_INC') ){
 }
 
 class Ts3Viewer extends gen_class {
-	public static $shortcuts = array();
 	protected $ip, $port, $t_port, $info, $error, $alert, $timeout, $fp, $plist, $clist, $sinfo, $connected, $noError, $cgroups, $sgroups;
 	private $config = array();
 	
