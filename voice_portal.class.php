@@ -35,6 +35,8 @@ class voice_portal extends portal_generic {
 	);
 	protected static $positions = array('left1', 'left2', 'right');
 	
+	protected static $apiLevel = 20;
+	
 	public function get_settings($state){
 		$settings	= array(
 			'module'	=> array(
