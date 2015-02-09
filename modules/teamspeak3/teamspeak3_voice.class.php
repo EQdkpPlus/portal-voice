@@ -35,7 +35,7 @@ class teamspeak3_voice extends gen_class {
 		
 		$this->tpl->css_file($this->root_path . 'portal/voice/modules/teamspeak3/ts3view.css');
 		
-		$htmlout = $this->pdc->get('portal.modul.voice.ts3.outputdata', false, true);
+		$htmlout = $this->pdc->get('portal.module.voice.ts3.outputdata', false, true);
 		if ((!$htmlout) or $cachetime == '0'){
 			include_once($this->root_path . 'portal/voice/modules/teamspeak3/Ts3Viewer.php');
 			$ts3v = registry::register("Ts3Viewer", array($this->config));
@@ -47,7 +47,7 @@ class teamspeak3_voice extends gen_class {
 
 			$htmlout = $ts3v->gethtml();
 			unset($ts3v);
-			if ($cachetime >= '1') {$this->pdc->put('portal.modul.voice.ts3.outputdata', $htmlout, $cachetime, false, true);}
+			if ($cachetime >= '1') {$this->pdc->put('portal.module.voice.ts3.outputdata', $htmlout, $cachetime, false, true);}
 		}
 
 		$out  = '<div>';

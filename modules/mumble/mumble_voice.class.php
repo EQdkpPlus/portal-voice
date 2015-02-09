@@ -39,7 +39,7 @@ class mumble_voice extends gen_class {
 		
 		$this->tpl->css_file($this->root_path . 'portal/voice/modules/mumble/mumbleChannelViewer.css');
 		
-		$output = $this->pdc->get('portal.modul.voice.mumble.outputdata', false, true);
+		$output = $this->pdc->get('portal.module.voice.mumble.outputdata', false, true);
 		if ((!$output) or $cachetime == 0){
 		
 			$output = "<div id='mumbleViewer' class='".$iconStyle."'>";
@@ -52,7 +52,7 @@ class mumble_voice extends gen_class {
 				}
 			}
 			$output .= "</div>";
-			if ($cachetime >= 1) {$this->pdc->put('portal.modul.voice.mumble.outputdata', $output, $cachetime, false, true);}
+			if ($cachetime >= 1) {$this->pdc->put('portal.module.voice.mumble.outputdata', $output, $cachetime, false, true);}
 		}
 
 		return $output;
