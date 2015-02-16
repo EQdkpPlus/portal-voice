@@ -382,7 +382,7 @@ class Ts3Viewer extends gen_class {
 				if($var['pid'] == $id){
 				
 					if ($this->channelIsSpacer($var)){
-						if (!$this->info['ts3_hide_spacer']){
+						if (!$this->info['hide_spacer']){
 							$SpacerType = $this->channelSpacerGetType($var['channel_name']);
 							$SpacerAlign = $this->channelSpacerGetAlign($var['channel_name']);
 							if ($SpacerType == 'custom'){
