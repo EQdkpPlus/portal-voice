@@ -249,7 +249,7 @@ class Ts3Viewer extends gen_class {
 					$this->plist[$key]['client_servergroups'] = $temp;
 				}
 				usort($this->plist, "ts3_cmp_group");
-				usort($this->plist, "ts3_cmp_admin");
+				//usort($this->plist, "ts3_cmp_admin");
 			}
 
 		}
