@@ -464,7 +464,7 @@ class Ts3Viewer extends gen_class {
 												$g_img .= '<div class="tsca" style="float:right"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/group_icon_'.intval($iconid).'.png" alt="'.$arrGroups[intval($iconid)].'" title="'.$arrGroups[intval($iconid)].'"/></div>';
 											}
 										}
-										$return .= $platzhalter.'<div class="tsleer">&nbsp;</div><div class="tsleer">&nbsp;</div><div class="tsca"><img src="'.$this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$p_img.'" alt="Player" /></div><div class="tsna">'.htmlspecialchars($this->cut_names($u_var['client_nickname'],$this->info), ENT_COMPAT | ENT_HTML401, 'UTF-8').'</div>'.$g_img.'<div style="clear:both"></div>';
+										$return .= $platzhalter.'<div class="tsleer">&nbsp;</div><div class="tsleer">&nbsp;</div><div class="tsca"><img src="'.$this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$p_img.'" alt="Player" /></div><div class="tsna">'.$this->autolink_username($u_var['client_nickname'], htmlspecialchars($this->cut_names($u_var['client_nickname'],$this->info), ENT_COMPAT | ENT_HTML401, 'UTF-8')).'</div>'.$g_img.'<div style="clear:both"></div>';
 									}
 								}
 							}
@@ -475,6 +475,14 @@ class Ts3Viewer extends gen_class {
 			}
 		}
 		return $return;
+	}
+	
+	public function autolink_username($strUsername, $strCleanedUsername){
+		$intUserId = register(pdh)->get('user', 'userid', array($strUsername));
+		if($intUserID){
+			return '<a href="'.register('routing')->build('user', $strUsername, 'u'.$intUserId).'">'.$strCleanedUsername.'</a>';
+		}
+		return $strCleanedUsername;
 	}
 	
 	  public function channelIsSpacer($channel){
