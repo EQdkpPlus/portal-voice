@@ -32,9 +32,10 @@ class mumble_voice extends gen_class {
 	}
 	
 	public function output() {
-		$dataUri = $this->config('mumbleviewer_datauri');
-		$dataFormat = $this->config('mumbleviewer_dataformat');
-		$iconStyle = $this->config('mumbleviewer_iconstyle');
+		
+		$dataUri = $this->config('mumble_datauri');
+		$dataFormat = $this->config('mumble_dataformat');
+		$iconStyle = $this->config('mumble_iconstyle');
 		$cachetime = 30; //cachetime = 30 seconds
 		
 		$this->tpl->css_file($this->root_path . 'portal/voice/modules/mumble/mumbleChannelViewer.css');
