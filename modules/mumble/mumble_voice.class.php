@@ -35,6 +35,7 @@ class mumble_voice extends gen_class {
 		
 		$dataUri = $this->config('mumble_datauri');
 		$dataFormat = $this->config('mumble_dataformat');
+		$linkUri = $this->config('mumble_linkuri');
 		$iconStyle = $this->config('mumble_iconstyle');
 		$cachetime = 30; //cachetime = 30 seconds
 		
@@ -49,7 +50,7 @@ class mumble_voice extends gen_class {
 				$mumbleViewerInclude = $this->root_path . 'portal/voice/modules/mumble/mumbleChannelViewer.php';
 				if (is_file($mumbleViewerInclude)) {
 					require_once( $mumbleViewerInclude );
-					$output .= MumbleChannelViewer::render( html_entity_decode( $dataUri ), $dataFormat );
+					$output .= MumbleChannelViewer::render( html_entity_decode( $dataUri ), $dataFormat, $linkUri );
 				}
 			}
 			$output .= "</div>";
