@@ -17,10 +17,10 @@ class MumbleChannelViewer
 	 * @param string $dataFormat The format the data will be in (i.e. xml or json).
 	 * @return string An HTML unordered list containing all of the channels and users currently connected to the Mumble server.
 	*/
-	static function render($dataUri, $dataFormat = "json")
+	static function render($dataUri, $dataFormat = "json", $linkUri)
 	{
 		if ($dataFormat == "json")
-			return self::renderJson($dataUri);
+			return self::renderJson($dataUri, $linkUri);
 		else if ($dataFormat == "xml")
 			return "<div class='mumbleChannelViewer-error'>The XML format is not supported yet.</div>";
 		else
@@ -32,7 +32,7 @@ class MumbleChannelViewer
 	 * @param string $jsonUri URI that will return information about a Mumble server in JSON format.
 	 * @return string An HTML unordered list containing all of the channels and users currently connected to the Mumble server.
 	*/
-	protected static function renderJson($jsonUri)
+	protected static function renderJson($jsonUri, $linkUri)
 	{
 		$httpOptions = array(
 			'http' => array(
@@ -50,7 +50,7 @@ class MumbleChannelViewer
 		if ($jsonDecoded == null)
 			return "<div class='mumbleChannelViewer-error'>Unable to parse the returned information as JSON.</div>";
 
-		return self::renderChannel($jsonDecoded["root"], true);
+		return self::renderChannel($jsonDecoded["root"], true, $linkUri);
 	}
 
 	/**
@@ -60,7 +60,7 @@ class MumbleChannelViewer
 	 * @param bool $renderUl True if an opening UL tag has aleady been generated (i.e. this usually happens when $currentChannel is not the first channel in the list of subchannels); otherwise, false.
 	 * @return string An HTML unordered list containing all of the subchannels and users.
 	*/
-	protected static function renderChannel($currentChannel, $renderUl) {
+	protected static function renderChannel($currentChannel, $renderUl, $linkUri) {
 		$output = null;
 		if ($renderUl)
 			$output .= "<ul>";
@@ -68,6 +68,8 @@ class MumbleChannelViewer
 		$output .= "<li>";		// Start of the LI element for this channel
 		if (isset($currentChannel["x_connecturl"]))
 			$output .= "<a href=\"{$currentChannel["x_connecturl"]}\">{$currentChannel["name"]}</a>";
+		elseif ($linkUri)
+			$output .= "<a href=\"{$linkUri}\">{$currentChannel["name"]}</a>";
 		else
 			$output .= "<span class='mumbleChannelViewer-channel'>{$currentChannel["name"]}</span>";
 
