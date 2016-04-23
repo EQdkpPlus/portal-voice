@@ -36,7 +36,9 @@ $lang = array(
 	'voice_f_help_mumble_datauri'   => 'Enter the CVP Uniform Resource Identifier given to you by your hosting provider.',
 	'voice_f_mumble_dataformat'     => 'Data Format',
 	'voice_f_help_mumble_dataformat'=> 'Select the data format specified by your hosting provider.',
-	'voice_f_mumble_iconstyle'		=> 'Icon Style',
+	'voice_f_mumble_linkuri'	=> 'Link URI',
+	'voice_f_help_mumble_linkuri'	=> 'Optional: Enter the link address to join your server.',
+	'voice_f_mumble_iconstyle'	=> 'Icon Stil',
 	'voice_f_help_mumble_iconstyle'	=> 'Select the style of icons that prefer.',
 
 	//Teamspeak 3
