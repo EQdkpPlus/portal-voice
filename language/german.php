@@ -32,12 +32,14 @@ $lang = array(
 
 	//Mumble
 	'mumble'     					=> 'Mumble',
-	'voice_f_mumble_datauri'   		=> 'Data URI',
-	'voice_f_help_mumble_datauri'   => 'Enter the CVP Uniform Resource Identifier given to you by your hosting provider.',
-	'voice_f_mumble_dataformat'     => 'Data Format',
-	'voice_f_help_mumble_dataformat'=> 'Select the data format specified by your hosting provider.',
-	'voice_f_mumble_iconstyle'		=> 'Icon Style',
-	'voice_f_help_mumble_iconstyle'	=> 'Select the style of icons that prefer.',
+	'voice_f_mumble_datauri'   		=> 'Datenadresse',
+	'voice_f_help_mumble_datauri'   => 'Trage hier die CVP-Datenadresse von deinem Anbieter ein.',
+	'voice_f_mumble_dataformat'     => 'Datenformat',
+	'voice_f_help_mumble_dataformat'=> 'Wähle das passende Datenformat für deinen Anbieter.',
+	'voice_f_mumble_linkuri'	=> 'Beitritts-Link',
+	'voice_f_help_mumble_linkuri'	=> 'Optional: Trage hier eine mumble:// Adresse ein, über die du dich zu deinem Server verbinden kannst. Diese wird nur verwendet, wenn sie nicht vom Server bereitgestellt wird.',
+	'voice_f_mumble_iconstyle'	=> 'Icon Stil',
+	'voice_f_help_mumble_iconstyle'	=> 'Wähle einen Stil für die angezeigten Icons.',
 
 	//Teamspeak 3
 	'ts3'							=> 'Teamspeak 3',

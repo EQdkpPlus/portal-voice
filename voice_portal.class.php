@@ -165,12 +165,16 @@ class voice_portal extends portal_generic {
 			$mumble_settings	= array(
 				'mumble_datauri'		=> array(
 					'type'  	=> 'text',
-					'size'      => '30',
+					'size'		=> '30',
 				),
 				'mumble_dataformat'	=> array(
 					'type'  	=> 'dropdown',
-					'size'      => '30',
+					'size'		=> '30',
 					'options'	=> array('json' => 'JSON', 'xml' => 'XML'),
+				),
+				'mumble_linkuri' 		=> array(
+					'type'		=> 'text',
+					'size'		=> '30',
 				),
 				'mumble_iconstyle'		=> array(
 					'type'		=> 'dropdown',
