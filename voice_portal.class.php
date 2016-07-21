@@ -27,7 +27,7 @@ class voice_portal extends portal_generic {
 	protected static $path		= 'voice';
 	protected static $data		= array(
 		'name'			=> 'Voice Server',
-		'version'		=> '0.2.0',
+		'version'		=> '0.2.1',
 		'author'		=> 'GodMod',
 		'icon'			=> 'fa-microphone',
 		'contact'		=> EQDKP_PROJECT_URL,
@@ -192,7 +192,7 @@ class voice_portal extends portal_generic {
 		if (!strlen($strModule)) $strModule = "ts3";
 		
 		$arrSettingsArray = $this->get_settings('fetch_new');
-		$arrOptions = array();
+		$arrOptions = array('_module_id' => $this->id);
 		foreach($arrSettingsArray as $key => $value){
 			$arrOptions[$key] = $this->config($key);
 		}
