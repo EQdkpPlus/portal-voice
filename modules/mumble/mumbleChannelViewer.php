@@ -17,7 +17,7 @@ class MumbleChannelViewer
 	 * @param string $dataFormat The format the data will be in (i.e. xml or json).
 	 * @return string An HTML unordered list containing all of the channels and users currently connected to the Mumble server.
 	*/
-	static function render($dataUri, $dataFormat = "json", $linkUri)
+	static function render($dataUri, $dataFormat = "json", $linkUri = false)
 	{
 		if ($dataFormat == "json")
 			return self::renderJson($dataUri, $linkUri);
@@ -32,7 +32,7 @@ class MumbleChannelViewer
 	 * @param string $jsonUri URI that will return information about a Mumble server in JSON format.
 	 * @return string An HTML unordered list containing all of the channels and users currently connected to the Mumble server.
 	*/
-	protected static function renderJson($jsonUri, $linkUri)
+	protected static function renderJson($jsonUri, $linkUri = false)
 	{
 		$httpOptions = array(
 			'http' => array(
@@ -60,7 +60,7 @@ class MumbleChannelViewer
 	 * @param bool $renderUl True if an opening UL tag has aleady been generated (i.e. this usually happens when $currentChannel is not the first channel in the list of subchannels); otherwise, false.
 	 * @return string An HTML unordered list containing all of the subchannels and users.
 	*/
-	protected static function renderChannel($currentChannel, $renderUl, $linkUri) {
+	protected static function renderChannel($currentChannel, $renderUl, $linkUri=false) {
 		$output = null;
 		if ($renderUl)
 			$output .= "<ul>";
