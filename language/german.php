@@ -82,5 +82,11 @@ $lang = array(
 	'voice_f_ventrilo_channelc'		=> 'Hex Code der Channelfarbe',
 	'voice_f_ventrilo_servercolor'	=> 'Hex Code der Serverfarbe',
 	'voice_f_ventrilo_usercolor'	=> 'Hex Code der Usernamefarbe',
+		
+	'discord'						=> 'Discord',
+	'voice_f_discord_serverid'		=> 'Server-ID',
+	'voice_f_discord_height'		=> 'Höhe des Widgets',
+	'voice_f_discord_width'			=> 'Breite des Widgets',
+	'voice_f_discord_theme'			=> 'Farbe des Widgets',
 );
 ?>

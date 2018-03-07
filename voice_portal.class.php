@@ -27,7 +27,7 @@ class voice_portal extends portal_generic {
 	protected static $path		= 'voice';
 	protected static $data		= array(
 		'name'			=> 'Voice Server',
-		'version'		=> '0.2.2',
+		'version'		=> '0.2.3',
 		'author'		=> 'GodMod',
 		'icon'			=> 'fa-microphone',
 		'contact'		=> EQDKP_PROJECT_URL,
@@ -49,6 +49,7 @@ class voice_portal extends portal_generic {
 					'ts3'		=> 'Teamspeak 3',
 					'mumble'	=> 'Mumble',
 					'ventrilo'	=> 'Ventrilo',
+					'discord'	=> 'Discord',
 				),
 			),
 		);
@@ -182,6 +183,26 @@ class voice_portal extends portal_generic {
 				)
 			);
 			$settings = array_merge($settings, $mumble_settings);
+		} elseif($strModule == 'discord'){
+			$discord_settings	= array(
+					'discord_serverid'		=> array(
+							'type'  	=> 'text',
+							'size'		=> '30',
+					),
+					'discord_height'		=> array(
+							'type'  	=> 'text',
+							'size'		=> '3',
+					),
+					'discord_width'		=> array(
+							'type'  	=> 'text',
+							'size'		=> '3',
+					),
+					'discord_theme'		=> array(
+							'type'  	=> 'dropdown',
+							'options'	=> array('light' => 'Light', 'dark' => 'Dark'),
+					),
+			);
+			$settings = array_merge($settings, $discord_settings);
 		}
 		
 		return $settings;
@@ -210,6 +231,10 @@ class voice_portal extends portal_generic {
 			include_once($this->root_path.'portal/voice/modules/mumble/mumble_voice.class.php');
 			$mumble = registry::register('mumble_voice', array($arrOptions));
 			$out = $mumble->output();
+		} elseif($strModule == "discord"){
+			include_once($this->root_path.'portal/voice/modules/discord/discord_voice.class.php');
+			$discord = registry::register('discord_voice', array($arrOptions));
+			$out = $discord->output();
 		}
 		
 		$this->header = $this->user->lang($strModule);
