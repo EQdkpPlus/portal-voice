@@ -31,19 +31,119 @@ class discord_voice extends gen_class {
 	}
 
 	public function output() {
-		$serverID = $this->config('discord_serverid');
-		$height = ($this->config('discord_height')) ? $this->config('discord_height') : 500;
-		$width = ($this->config('discord_width')) ? $this->config('discord_width') : '';
-		$strUsername = ($this->user->id > 0) ? '&username='.sanitize($this->user->data['username']) : '';
+		$moduleID = $this->config('_module_id');
 		
-		$strTheme =  ($this->config('discord_theme')) ? $this->config('discord_theme') : 'dark';
-		
-		if($serverID){
-			$out = '<iframe src="https://discordapp.com/widget?id='.$serverID.'&theme='.$strTheme.$strUsername.'" height="'.$height.'" width="'.$width.'" allowtransparency="true" frameborder="0"></iframe>';
+		$out = $this->pdc->get('portal.module.voice.discord.'.$moduleID);
+		if($out == null || !$out){
+			include_once($this->root_path.'/portal/voice/modules/discord/discordviewer.class.php');
+			$objViewer = register('discordviewer', array($moduleID));
 			
+			$out = $objViewer->viewer();
+			$this->pdc->put('portal.module.voice.discord.'.$moduleID, $out, 5*60);
+		}
+		
+		$this->tpl->add_js('
+			setInterval(function() {
+				$.get("'.$this->server_path.'portal/voice/modules/discord/ajax.php'.$this->SID.'&mid='.$moduleID.'", function(data){
+					if(data){
+						$(".discord_'.$moduleID.'_container").html(data);
+					}
+				});
+
+			}, 1000*60*5);
+		');
+		
+		$this->tpl->add_css('
+			img.mutedeaf {
+			    width: 5%;
+			    vertical-align: middle;
+			}
+				
+			img.moremutedeaf {
+			    width: 5.5%;
+			    vertical-align: middle;
+			}
+				
+			.discord-avatar-img {
+			    border-radius:100%;
+			    width: 22px;
+			    display:inline;
+			    margin-top: 3px;
+			    margin-bottom: 0px;
+			    margin-right:5px!important;
+			    vertical-align:middle
+			}
+				
+			.discord-status {
+			    border-radius:100%;
+			    width: 8px;
+			    border:solid 1px #fff!important;
+			    border-color:#282b30!important;
+			    display:inline;
+			    margin-top: 14px;
+			    margin-left: -17px;
+			    vertical-align:middle
+			}
+				
+			.discord-game {
+			    -ms-flex: 1;
+			    -webkit-box-flex: 1;
+			    flex: 1;
+			    overflow: hidden;
+			    text-align: right;
+			    text-overflow: ellipsis;
+			    white-space: nowrap;
+				width: 30px;
+				font-style: italic;
+				font-size: 0.8em;
+				margin-left: 5px;
+				padding-right: 5px;
+			}
+				
+			.discord-member {
+			    -ms-flex-align: center;
+			    -webkit-box-align: center;
+			    align-items: center;
+			    display: -webkit-box;
+			    display: -ms-flexbox;
+			    display: flex;
+			    margin: 6px 0;
+			    padding-left: 10px;
+			}
+				
+			.discord-name {
+			    -ms-flex: 1;
+			    -webkit-box-flex: 1;
+			    flex: 1;
+			    overflow: hidden;
+			    text-overflow: ellipsis;
+			    white-space: nowrap;
+			}
+				
+			.discord-channel {
+				font-size: 1.2em;
+			}
+				
+			.discord-channel-container {
+				margin-bottom: 8px;
+			}
+				
+		', true);
+		
+		$intHeight = intval($this->config('discord_height'));
+		
+		if($this->config('discord_height') != "" && $intHeight){
+			$this->tpl->add_css('
+			#portalbox'.$moduleID.' .discordViewer {
+				max-height: '.$intHeight.'px;
+				overflow: scroll;
+				overflow-x: hidden;
+			}
+					
+			', true);
 		}
 
-		return $out;
+		return '<div class="discord_'.$moduleID.'_container">'.$out.'</div>';
 	}
 	
 	private function config($strKey){

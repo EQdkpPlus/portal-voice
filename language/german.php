@@ -85,8 +85,10 @@ $lang = array(
 		
 	'discord'						=> 'Discord',
 	'voice_f_discord_serverid'		=> 'Server-ID',
-	'voice_f_discord_height'		=> 'Höhe des Widgets',
-	'voice_f_discord_width'			=> 'Breite des Widgets',
-	'voice_f_discord_theme'			=> 'Farbe des Widgets',
+	'voice_f_discord_height'		=> 'Höhe (in Pixel)',
+		'voice_f_discord_connect'		=> 'Verbinden',
+		'voice_f_discord_showonline'		=> 'Zeige alle Member, die online sind',
+		'voice_f_discord_hideempty' => 'Blende leere Sprachkanäle aus',
+		'voice_f_discord_hidegame' => 'Blende die Spiele aus',
 );
 ?>

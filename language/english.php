@@ -1,3 +1,4 @@
+
 <?php
 /*	Project:	EQdkp-Plus
  *	Package:	EQdkp-Plus Language File
@@ -88,9 +89,11 @@ $lang = array(
 		
 		'discord'						=> 'Discord',
 		'voice_f_discord_serverid'		=> 'Server-ID',
-		'voice_f_discord_height'		=> 'Height of the Widget',
-		'voice_f_discord_width'			=> 'Width of the Widget',
-		'voice_f_discord_theme'			=> 'Color of the Widget',
+		'voice_f_discord_height'		=> 'Height (in Pixels)',
+		'voice_f_discord_connect'		=> 'Connect',
+		'voice_f_discord_showonline'		=> 'Show online members',
+		'voice_f_discord_hideempty' => 'Hide empty Voicechannels',
+		'voice_f_discord_hidegame' => 'Hide played game',
 );
 
 ?>

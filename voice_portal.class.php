@@ -27,7 +27,7 @@ class voice_portal extends portal_generic {
 	protected static $path		= 'voice';
 	protected static $data		= array(
 		'name'			=> 'Voice Server',
-		'version'		=> '0.2.3',
+		'version'		=> '0.2.4',
 		'author'		=> 'GodMod',
 		'icon'			=> 'fa-microphone',
 		'contact'		=> EQDKP_PROJECT_URL,
@@ -193,13 +193,14 @@ class voice_portal extends portal_generic {
 							'type'  	=> 'text',
 							'size'		=> '3',
 					),
-					'discord_width'		=> array(
-							'type'  	=> 'text',
-							'size'		=> '3',
+					'discord_showonline'		=> array(
+							'type'  	=> 'radio',
 					),
-					'discord_theme'		=> array(
-							'type'  	=> 'dropdown',
-							'options'	=> array('light' => 'Light', 'dark' => 'Dark'),
+					'discord_hideempty'		=> array(
+							'type'  	=> 'radio',
+					),
+					'discord_hidegame'		=> array(
+							'type'  	=> 'radio',
 					),
 			);
 			$settings = array_merge($settings, $discord_settings);
