@@ -79,7 +79,7 @@ class discordviewer extends gen_class {
 								$memberVoiceCount++;
 								
 								$out .= '<div class="discord-member">';
-								$out .= "<div class='discord-avatar'><img class='discord-avatar-img' src=\"".sanitize($member->avatar_url)."\">";
+								$out .= "<div class='discord-avatar'><img class='discord-avatar-img' src=\"".sanitize($member->avatar_url)."?size=32\">";
 								
 								$out .= "&nbsp;<img class=\"discord-status\" src=\"".$imgPath.sanitize($member->status).".png\">";
 								$out .= "</div>";
@@ -125,7 +125,7 @@ class discordviewer extends gen_class {
 						$memberCount++;
 						
 						$out .= '<div class="discord-member">';
-						$out .= "<div class='discord-avatar'><img class='discord-avatar-img' src=\"".sanitize($member->avatar_url)."\">";
+						$out .= "<div class='discord-avatar'><img class='discord-avatar-img' src=\"".sanitize($member->avatar_url)."?size=32\">";
 						
 						$out .= "&nbsp;<img class=\"discord-status\" src=\"".$imgPath.sanitize($member->status).".png\">";
 						$out .= "</div>";
