@@ -173,4 +173,4 @@ class discordviewer extends gen_class {
 		return $out;
 	}
 }
-	
+?>

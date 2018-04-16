@@ -26,6 +26,10 @@ include_once($eqdkp_root_path.'common.php');
 
 $moduleID = registry::register('input')->get('mid');
 
+//Check Permission
+$objPortal = register('portal');
+if(!$objPortal->check_visibility($moduleID)) exit;
+
 $out = register('pdc')->get('portal.module.voice.discord.'.$moduleID);
 if($out == null || !$out){
 	include_once($eqdkp_root_path.'portal/voice/modules/discord/discordviewer.class.php');

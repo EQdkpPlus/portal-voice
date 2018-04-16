@@ -1,4 +1,3 @@
-
 <?php
 /*	Project:	EQdkp-Plus
  *	Package:	EQdkp-Plus Language File
