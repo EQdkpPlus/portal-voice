@@ -40,7 +40,7 @@ class teamspeak3_voice extends gen_class {
 		$htmlout = $this->pdc->get('portal.module.voice.ts3.outputdata.'.$moduleID, false, true);
 		if ((!$htmlout) or $cachetime == '0'){
 			include_once($this->root_path . 'portal/voice/modules/teamspeak3/Ts3Viewer.php');
-			$ts3v = registry::register("Ts3Viewer", array($this->config));
+			$ts3v = registry::register("Ts3Viewer", array($moduleID));
 
 			if ($ts3v->connect()) {
 				$ts3v->query();
@@ -51,8 +51,21 @@ class teamspeak3_voice extends gen_class {
 			unset($ts3v);
 			if ($cachetime >= '1') {$this->pdc->put('portal.module.voice.ts3.outputdata.'.$moduleID, $htmlout, $cachetime, false, true);}
 		}
+		
+		$ajaxReloadTime = ((int)$cachetime < 60) ? 60 : intval($cachetime);
+		
+		$this->tpl->add_js('
+			setInterval(function() {
+				$.get("'.$this->server_path.'portal/voice/modules/teamspeak3/ajax.php'.$this->SID.'&mid='.$moduleID.'", function(data){
+					if(data){
+						$(".ts3_'.$moduleID.'_container").html(data);
+					}
+				});
+				
+			}, 1000*'.$ajaxReloadTime.');
+		');
 
-		$out  = '<div>';
+		$out  = '<div class="ts3_'.$moduleID.'_container">';
 		$out .= $htmlout;
 		$out .= '</div>';
 		return $out;

@@ -27,7 +27,7 @@ class voice_portal extends portal_generic {
 	protected static $path		= 'voice';
 	protected static $data		= array(
 		'name'			=> 'Voice Server',
-		'version'		=> '0.2.5',
+		'version'		=> '0.2.6',
 		'author'		=> 'GodMod',
 		'icon'			=> 'fa-microphone',
 		'contact'		=> EQDKP_PROJECT_URL,
@@ -67,7 +67,7 @@ class voice_portal extends portal_generic {
 					'type'		=> 'text',
 					'size'		=> '5',
 				),
-				'ts3_telnetport'		=> array(
+				'ts3_telnetport'=> array(
 					'type'		=> 'text',
 					'size'		=> '5',
 				),

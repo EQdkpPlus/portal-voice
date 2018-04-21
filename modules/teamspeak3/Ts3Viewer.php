@@ -25,10 +25,35 @@ if ( !defined('EQDKP_INC') ){
 
 class Ts3Viewer extends gen_class {
 	protected $ip, $port, $t_port, $info, $error, $alert, $timeout, $fp, $plist, $clist, $sinfo, $connected, $noError, $cgroups, $sgroups;
-	private $config = array();
+	private $_config = array();
+	private $module_id = false;
 	
-	public function __construct($arrConfig) {
-		$this->config = $arrConfig;
+	public function __construct($moduleID) {
+		$this->module_id = $moduleID;
+		
+		//Configuration
+		$this->_config['ts3_ip'] = $this->config->get('ts3_ip', 'pmod_'.$this->module_id);
+		$this->_config['ts3_port'] = $this->config->get('ts3_port', 'pmod_'.$this->module_id);
+		$this->_config['ts3_telnetport'] = $this->config->get('ts3_telnetport', 'pmod_'.$this->module_id);
+		$this->_config['ts3_id'] = $this->config->get('ts3_id', 'pmod_'.$this->module_id);
+		$this->_config['ts3_cache'] = $this->config->get('ts3_cache', 'pmod_'.$this->module_id);
+		$this->_config['ts3_banner'] = $this->config->get('ts3_banner', 'pmod_'.$this->module_id);
+		$this->_config['ts3_join'] = $this->config->get('ts3_join', 'pmod_'.$this->module_id);
+		$this->_config['ts3_jointext'] = $this->config->get('ts3_jointext', 'pmod_'.$this->module_id);
+		$this->_config['ts3_legend'] = $this->config->get('ts3_legend', 'pmod_'.$this->module_id);
+		$this->_config['ts3_cut_names'] = $this->config->get('ts3_cut_names', 'pmod_'.$this->module_id);
+		$this->_config['ts3_cut_channel'] = $this->config->get('ts3_cut_channel', 'pmod_'.$this->module_id);
+		$this->_config['only_populated_channel'] = $this->config->get('only_populated_channel', 'pmod_'.$this->module_id);
+		$this->_config['ts3_useron'] = $this->config->get('ts3_useron', 'pmod_'.$this->module_id);
+		$this->_config['ts3_stats'] = $this->config->get('ts3_stats', 'pmod_'.$this->module_id);
+		$this->_config['ts3_stats_showos'] = $this->config->get('ts3_stats_showos', 'pmod_'.$this->module_id);
+		$this->_config['ts3_stats_version'] = $this->config->get('ts3_stats_version', 'pmod_'.$this->module_id);
+		$this->_config['ts3_stats_numchan'] = $this->config->get('ts3_stats_numchan', 'pmod_'.$this->module_id);
+		$this->_config['ts3_stats_uptime'] = $this->config->get('ts3_stats_uptime', 'pmod_'.$this->module_id);
+		$this->_config['ts3_stats_install'] = $this->config->get('ts3_stats_install', 'pmod_'.$this->module_id);
+		$this->_config['ts3_timeout'] = $this->config->get('ts3_timeout', 'pmod_'.$this->module_id);
+		$this->_config['ts3_show_spacer'] = $this->config->get('ts3_show_spacer', 'pmod_'.$this->module_id);
+		
 		// INIT variables
 		$this->connected = FALSE;
 		$this->noError = TRUE;
@@ -37,79 +62,79 @@ class Ts3Viewer extends gen_class {
 		if (isset($H_MODE) && $H_MODE) {
 			$this->timeout = 500000; // 500000 fixed for hosting-mode
 		} else {
-			$this->timeout = ($this->config('ts3_timeout') == '') ? 500000 : $this->config('ts3_timeout');
+			$this->timeout = ($this->_config('ts3_timeout') == '') ? 500000 : $this->_config('ts3_timeout');
 		}
 		
 		// The Server IP (without Port)
 		// Die Server IP (ohne Port)
-		$this->ip = ($this->config('ts3_ip') == '') ? '127.0.0.1' : $this->config('ts3_ip');
+		$this->ip = ($this->_config('ts3_ip') == '') ? '127.0.0.1' : $this->_config('ts3_ip');
 
 
 		// The port - Default: 9987
 		// Der Port - Standart: 9987
-		$this->port = ($this->config('ts3_port') == '') ? '9987' : $this->config('ts3_port');
+		$this->port = ($this->_config('ts3_port') == '') ? '9987' : $this->_config('ts3_port');
 
 		// The Telnet Port of your Server - Default: 10011
 		// Der Telnet Port deines Servers - Standart: 10011
-		$this->t_port = ($this->config('ts3_telnetport') == '') ? '10011' : $this->config('ts3_telnetport');
+		$this->t_port = ($this->_config('ts3_telnetport') == '') ? '10011' : $this->_config('ts3_telnetport');
 
 		// The ID from your Virtual Server - Default: 1
 		// Die ID deines Server - Standart - 1
-		$this->sid = ($this->config('ts3_id') == '') ? '1' : $this->config('ts3_id');
+		$this->sid = ($this->_config('ts3_id') == '') ? '1' : $this->_config('ts3_id');
 		
-		$this->info['hide_spacer'] = !(int)$this->config('ts3_show_spacer');
+		$this->info['hide_spacer'] = !(int)$this->_config('ts3_show_spacer');
 		
 		// Shows banner if URL is avaible in TS - Yes=1 / No=0
 		// Zeige das Banner, welches du im TS eingestellt hast - Ja=1 / Nein=0
-		$this->info['banner'] = $this->config('ts3_banner');
+		$this->info['banner'] = $this->_config('ts3_banner');
 		
 		// Shows join-link - Yes=1 / No=0
 		// Zeige join-Link - Ja=1 / Nein=0
-		$this->info['join'] = $this->config('ts3_join');
+		$this->info['join'] = $this->_config('ts3_join');
 		
 		//Linktext des join-Links
-		$this->info['jointext'] = $this->config('ts3_jointext');
+		$this->info['jointext'] = $this->_config('ts3_jointext');
 
 		// Shows groupinfo at the bottom - Yes=1 / No=0
 		// Zeig unter der Tabelle eine Übersicht der Gruppen an - Ja=1 / Nein=0
-		$this->info['legend'] = $this->config('ts3_legend');
+		$this->info['legend'] = $this->_config('ts3_legend');
 
 		// If you want to abridge the usernames, set this to the desired size - No cut = 0
 		// Wenn du die Usernamen auf eine bestimmte Länge kürzen willst, gib hier die Anzahl der Zeichen ein - Kein Kürzen = 0
-		$this->info['ts3_cut_names'] = $this->config('ts3_cut_names');
+		$this->info['ts3_cut_names'] = $this->_config('ts3_cut_names');
 
 		// If you want to abridge the channelnames, set this to the desired size - No cut = 0
 		// Wenn du die Channelnamen auf eine bestimmte Länge kürzen willst, gib hier die Anzahl der Zeichen ein - Kein Kürzen = 0
-		$this->info['ts3_cut_channel'] = $this->config('ts3_cut_channel');
+		$this->info['ts3_cut_channel'] = $this->_config('ts3_cut_channel');
 		
 		// Show only populated channels - Yes=1 / No=0
 		// Zeige nur bevölkerte Kanäle - Ja=1 / Nein=0
-		$this->info['populated_only'] = $this->config('only_populated_channel');
+		$this->info['populated_only'] = $this->_config('only_populated_channel');
 
 		// Show Online User / Possible Users - Yes=1 / No=0
 		// Zeige die Anzahl der Online User und möglichen User an - Ja=1 / Nein=0
-		$this->info['useron'] = $this->config('ts3_useron');
+		$this->info['useron'] = $this->_config('ts3_useron');
 
 		//Show a statistic box under the TS viewer. - Yes=1 / No=0
 		//Zeigt eine Statistikbox unter dem TS Viewer - Ja=1 / Nein=0
-		$this->info['stats'] = $this->config('ts3_stats');
+		$this->info['stats'] = $this->_config('ts3_stats');
 		
 		//You can choose wich serverinfos will shown and change the label - Yes=1 / No=0
 		//Du kannst Auswählen welcheServerinfo gezeigt werden soll und welche nicht. Ausserdem kannst Du die Bezeichnung ändern
 		
-		$this->info['serverinfo']['virtualserver_platform']['show'] = $this->config('ts3_stats_showos'); //Show on wich OS TS3 run
+		$this->info['serverinfo']['virtualserver_platform']['show'] = $this->_config('ts3_stats_showos'); //Show on wich OS TS3 run
 		$this->info['serverinfo']['virtualserver_platform']['label'] = 'TS3 OS'; 
 
-		$this->info['serverinfo']['virtualserver_version']['show'] = $this->config('ts3_stats_version'); //Show the TS3 server version
+		$this->info['serverinfo']['virtualserver_version']['show'] = $this->_config('ts3_stats_version'); //Show the TS3 server version
 		$this->info['serverinfo']['virtualserver_version']['label'] = 'TS3 Version'; 
 		
-		$this->info['serverinfo']['virtualserver_channelsonline']['show'] = $this->config('ts3_stats_numchan'); //Show the number of channels
+		$this->info['serverinfo']['virtualserver_channelsonline']['show'] = $this->_config('ts3_stats_numchan'); //Show the number of channels
 		$this->info['serverinfo']['virtualserver_channelsonline']['label'] = 'Channnels'; 
 		
-		$this->info['serverinfo']['virtualserver_uptime']['show'] = $this->config('ts3_stats_uptime'); //Show the server uptime since the last restart
+		$this->info['serverinfo']['virtualserver_uptime']['show'] = $this->_config('ts3_stats_uptime'); //Show the server uptime since the last restart
 		$this->info['serverinfo']['virtualserver_uptime']['label'] = 'Uptime';
 
-		$this->info['serverinfo']['virtualserver_created']['show'] = $this->config('ts3_stats_install'); //Show when the server was installed
+		$this->info['serverinfo']['virtualserver_created']['show'] = $this->_config('ts3_stats_install'); //Show when the server was installed
 		$this->info['serverinfo']['virtualserver_created']['label'] = 'Online since';
 	}
 	
@@ -130,7 +155,7 @@ class Ts3Viewer extends gen_class {
 			$htmlout	.= '</div>';
 			$htmlout	.= '<div id="tscont">';
 			$htmlout	.= '<div class="tsca"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/serverimg.png'.'" alt="'.$this->replace($this->sinfo['virtualserver_welcomemessage']).'" title="'.$this->replace($this->sinfo['virtualserver_welcomemessage']).'"/></div>';
-			$htmlout	.= '<div class="tsca">'.$this->replace($this->sinfo['virtualserver_name']).'</div>';
+			$htmlout	.= '<div class="tsca">'.sanitize($this->replace($this->sinfo['virtualserver_name'])).'</div>';
 			$htmlout	.= '<div style="clear:both"></div>';
 			$htmlout	.= $this->buildtree('0', '');
 			$htmlout	.= $this->useron();
@@ -508,7 +533,7 @@ class Ts3Viewer extends gen_class {
 		$search[] = '[/b]';
 		$replace[] = '';
 
-		return str_replace($search, $replace, $var);
+		return sanitize(str_replace($search, $replace, $var));
 	}
 	
 	protected function channelSpacerGetAlign($channelname){
@@ -601,13 +626,13 @@ class Ts3Viewer extends gen_class {
 		if($this->info['legend'] == '1'){
 			$return .= '<div id="legend" ><h3>'.$this->user->lang('lang_ts3_legend').'</h3>';
 			foreach ($this->info['sgroup'] as $var) {
-				$return .= '<div class="tsle"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$var['p'].'" alt="'.$var['n'].'" /></div>';
-				$return .= '<div class="tsle">'.$var['n'].'</div>';
+				$return .= '<div class="tsle"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.sanitize($var['p']).'" alt="'.sanitize($var['n']).'" /></div>';
+				$return .= '<div class="tsle">'.sanitize($var['n']).'</div>';
 				$return .= '<div style="clear:both"></div>';
 			}
 			foreach ($this->info['cgroup'] as $var) {
-				$return .= '<div class="tsle"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$var['p'].'" alt="'.$var['n'].'" /></div>';
-				$return .= '<div class="tsle">'.$var['n'].'</div>';
+				$return .= '<div class="tsle"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.sanitize($var['p']).'" alt="'.sanitize($var['n']).'" /></div>';
+				$return .= '<div class="tsle">'.sanitize($var['n']).'</div>';
 				$return .= '<div style="clear:both"></div>';
 			}
 			$return .= '</div>';
@@ -619,7 +644,7 @@ class Ts3Viewer extends gen_class {
 		//generates html-output for the number of user online in ts3
 		$return = '';
 		if($this->info['useron'] == 1 && isset($this->sinfo['virtualserver_clientsonline'])){
-			$return .= '<div class="useron">'.$this->user->lang('lang_ts3_user_online').': '.($this->sinfo['virtualserver_clientsonline']-$this->sinfo['virtualserver_queryclientsonline']).'/'.$this->sinfo['virtualserver_maxclients'].' </div>';
+			$return .= '<div class="useron">'.$this->user->lang('lang_ts3_user_online').': '.sanitize(($this->sinfo['virtualserver_clientsonline']-$this->sinfo['virtualserver_queryclientsonline']).'/'.$this->sinfo['virtualserver_maxclients']).' </div>';
 		}
 		return $return;
 	}
@@ -628,7 +653,7 @@ class Ts3Viewer extends gen_class {
 		//generates html-output for the ts3-banner if selected in options
 		$return = '';
 		if($this->info['banner'] == 1 && isset($this->sinfo['virtualserver_hostbanner_gfx_url']) && $this->sinfo['virtualserver_hostbanner_gfx_url'] != ''){
-			$return .= '<img id="tsbanner" src="'.$this->replace($this->sinfo['virtualserver_hostbanner_gfx_url']).'" alt="TS Banner" />';
+			$return .= '<img id="tsbanner" src="'.sanitize($this->replace($this->sinfo['virtualserver_hostbanner_gfx_url'])).'" alt="TS Banner" />';
 		}
 		return $return;
 	}
@@ -646,7 +671,7 @@ class Ts3Viewer extends gen_class {
 			$return .= '<div id="ts3stats"><h3>'.$this->user->lang('lang_ts3_stats').'</h3><table>';
 			foreach ($this->info['serverinfo'] as $key => $var){
 				if($var['show'] == 1){
-					$return .= '<tr><td style="font-weight:bold">'.$var['label'].':</td><td>'.$this->replace($this->sinfo[$key]).'</td></tr>';
+					$return .= '<tr><td style="font-weight:bold">'.sanitize($var['label']).':</td><td>'.sanitize($this->replace($this->sinfo[$key])).'</td></tr>';
 				}
 			}
 			$return .= '</table></div>';
@@ -660,7 +685,7 @@ class Ts3Viewer extends gen_class {
 		if (isset($this->error[0])){
 			$return .= '<div id="ts3errors"><h3>Errors</h3>';
 			foreach ($this->error as $var) {
-				$return .= $var.'<br />';
+				$return .= sanitize($var).'<br />';
 			}
 			$return .= '</div>';
 		}
@@ -674,16 +699,16 @@ class Ts3Viewer extends gen_class {
 		if (isset($this->alert[0])){
 			$return .= '<div id="ts3alerts"><h3>Alerts</h3>';
 			foreach ($this->alert as $var) {
-				$return .= $var.'<br />';
+				$return .= sanitize($var).'<br />';
 			}
 			$return .= '</div>';
 		}
 		return $return;
 	}
 	
-	private function config($strKey){
-		if (isset($this->config[$strKey])){
-			return $this->config[$strKey];
+	private function _config($strKey){
+		if (isset($this->_config[$strKey])){
+			return $this->_config[$strKey];
 		} else {
 			return "";
 		}
