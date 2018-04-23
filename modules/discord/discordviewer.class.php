@@ -32,7 +32,7 @@ class discordviewer extends gen_class {
 	public function __construct($id){
 		$this->module_id = $id;
 		
-		$this->serverID = $this->config->get('discord_serverid', 'pmod_'.$this->module_id);
+		$this->serverID = trim($this->config->get('discord_serverid', 'pmod_'.$this->module_id));
 		$this->blnHideEmpty = $this->config->get('discord_hideempty', 'pmod_'.$this->module_id);
 		$this->blnShowOnline = $this->config->get('discord_showonline', 'pmod_'.$this->module_id);
 		$this->blnHideGames = $this->config->get('discord_hidegame', 'pmod_'.$this->module_id);
@@ -168,6 +168,8 @@ class discordviewer extends gen_class {
 			
 			$out = str_replace('{VOICE_COUNT}', $memberVoiceCount, $out);
 			$out = str_replace('{ONLINE_COUNT}', $memberCount, $out);
+		} else {
+			$out = "Error while fetching Discord Data. Did you enable the Discord Widget for your Server? Is your ServerID correct? ";
 		}
 		
 		return $out;
