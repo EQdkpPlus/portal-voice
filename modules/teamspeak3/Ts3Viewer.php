@@ -24,7 +24,7 @@ if ( !defined('EQDKP_INC') ){
 }
 
 class Ts3Viewer extends gen_class {
-	protected $ip, $port, $t_port, $info, $error, $alert, $timeout, $fp, $plist, $clist, $sinfo, $connected, $noError, $cgroups, $sgroups;
+	protected $ip, $port, $t_port, $info, $error, $alert, $timeout, $fp, $plist, $clist, $sinfo, $connected, $noError, $cgroups, $sgroups, $ssh_port, $ssh_user, $ssh_pass, $is_ssh, $objssh;
 	private $_config = array();
 	private $module_id = false;
 	
@@ -54,9 +54,17 @@ class Ts3Viewer extends gen_class {
 		$this->_config['ts3_timeout'] = $this->config->get('ts3_timeout', 'pmod_'.$this->module_id);
 		$this->_config['ts3_show_spacer'] = $this->config->get('ts3_show_spacer', 'pmod_'.$this->module_id);
 		
+		$this->_config['ts3_sshport'] = $this->config->get('ts3_sshport', 'pmod_'.$this->module_id);
+		$this->_config['ts3_sshuser'] = $this->config->get('ts3_sshuser', 'pmod_'.$this->module_id);
+		$this->_config['ts3_sshpass'] = $this->config->get('ts3_sshpass', 'pmod_'.$this->module_id);
+		
+		
+		
+		
 		// INIT variables
 		$this->connected = FALSE;
 		$this->noError = TRUE;
+		$this->is_ssh = FALSE;
 		
 		// (timeout in microseconds) 1000000 is 1 second - Default: 500000
 		if (isset($H_MODE) && $H_MODE) {
@@ -73,6 +81,9 @@ class Ts3Viewer extends gen_class {
 		// The port - Default: 9987
 		// Der Port - Standart: 9987
 		$this->port = ($this->_config('ts3_port') == '') ? '9987' : $this->_config('ts3_port');
+		
+		// SSH default port 10022
+		$this->ssh_port = ($this->_config('ts3_sshport') == '') ? '10022' : $this->_config('ts3_sshport');
 
 		// The Telnet Port of your Server - Default: 10011
 		// Der Telnet Port deines Servers - Standart: 10011
@@ -81,6 +92,11 @@ class Ts3Viewer extends gen_class {
 		// The ID from your Virtual Server - Default: 1
 		// Die ID deines Server - Standart - 1
 		$this->sid = ($this->_config('ts3_id') == '') ? '1' : $this->_config('ts3_id');
+		
+		$this->ssh_user = $this->_config('ts3_sshuser');
+		$this->ssh_pass = $this->_config('ts3_sshpass');
+		
+		if($this->ssh_user != "" && $this->ssh_pass != "") $this->is_ssh = true;
 		
 		$this->info['hide_spacer'] = !(int)$this->_config('ts3_show_spacer');
 		
@@ -155,7 +171,7 @@ class Ts3Viewer extends gen_class {
 			$htmlout	.= '</div>';
 			$htmlout	.= '<div id="tscont">';
 			$htmlout	.= '<div class="tsca"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/serverimg.png'.'" alt="'.$this->replace($this->sinfo['virtualserver_welcomemessage']).'" title="'.$this->replace($this->sinfo['virtualserver_welcomemessage']).'"/></div>';
-			$htmlout	.= '<div class="tsca">'.sanitize($this->replace($this->sinfo['virtualserver_name'])).'</div>';
+			$htmlout	.= '<div class="tsca">'.$this->replace($this->sinfo['virtualserver_name']).'</div>';
 			$htmlout	.= '<div style="clear:both"></div>';
 			$htmlout	.= $this->buildtree('0', '');
 			$htmlout	.= $this->useron();
@@ -174,31 +190,52 @@ class Ts3Viewer extends gen_class {
 	public function connect(){
 		// establish connection to ts3
 		$errno = ''; $errstr = '';
-		$this->fp = @fsockopen($this->ip, $this->t_port, $errno, $errstr, 1);
-		if ($this->fp) {
-			stream_set_timeout($this->fp, 0, $this->timeout);
-			$msg = $this->read();
-			if(strpos($msg, 'TS3') === FALSE){
-				$this->error[] = 'Server seems to be no TS3';
+		
+		if($this->is_ssh){
+			$ssh = new phpseclib\Net\SSH2($this->ip, $this->ssh_port);		
+			if (!$ssh->login($this->ssh_user, $this->ssh_pass)) {
+				$this->error[] = 'Can not connect to the server (using SSH with Credentials)';
 				$this->noError = FALSE;
 				$this->connected = FALSE;
 				return false;
 			} else {
+				$this->objssh = $ssh;
 				$this->connected = TRUE;
-				return true;
+				return true;	
 			}
 		} else {
-			$this->error[] = 'Can not connect to the server ('.$errno.')';
-			$this->noError = FALSE;
-			$this->connected = FALSE;
-			return false;
-		}
+			$this->fp = @fsockopen($this->ip, $this->t_port, $errno, $errstr, 1);
+			if ($this->fp) {
+				stream_set_timeout($this->fp, 0, $this->timeout);
+				$msg = $this->read();
+				if(strpos($msg, 'TS3') === FALSE){
+					$this->error[] = 'Server seems to be no TS3';
+					$this->noError = FALSE;
+					$this->connected = FALSE;
+					return false;
+				} else {
+					$this->connected = TRUE;
+					return true;
+				}
+			} else {
+				$this->error[] = 'Can not connect to the server ('.$errno.')';
+				$this->noError = FALSE;
+				$this->connected = FALSE;
+				return false;
+			}
+			
+		}	
 	}
 	
 	public function disconnect(){
 		//send quit-command to the server
-		$cmd = "quit\n";
-		fputs($this->fp, $cmd);
+		if($this->is_ssh){
+			$this->objssh->disconnect();
+		} else {
+			$cmd = "quit\n";
+			fputs($this->fp, $cmd);
+		}
+
 		$this->connected = FALSE;
 	}
 	
@@ -331,7 +368,31 @@ class Ts3Viewer extends gen_class {
 		return $msg;
 	}
 	
+	protected function _formatSSH($strResult){
+		$arrResult = explode("\n", $strResult);	
+		unset($arrResult[0]);
+		return $arrResult;
+	}
+	
 	protected function sendCmd($cmd){
+		if($this->is_ssh){
+			$this->objssh->setTimeout(0.1);
+			$d= $this->objssh->read("test>");
+			$c = $this->objssh->write($cmd);
+			$this->objssh->setTimeout(0.1);
+			$d= $this->objssh->read();
+			
+			$arrResult = $this->_formatSSH($d);
+			if(count($arrResult) > 1){
+				return $arrResult[1];
+			} else {
+				$this->error[] = $this->parse_error($this->replace($arrResult[1]));
+				$this->noError = FALSE;
+				return false;
+			}
+		}
+		
+		
 		//sends a command to ts3 and gets the answer
 		$msg = '';
 		if ($this->connected and $this->noError){
@@ -414,12 +475,12 @@ class Ts3Viewer extends gen_class {
 								$return .='<div class="tsleer">&nbsp;</div>';
 								$channelname = substr($var['channel_name'], strpos($var['channel_name'], ']')+1);
 								switch($SpacerAlign){
-									case 'left': $return .= '<div style="text-align:left">'.htmlspecialchars($this->cut_channel($channelname)).'</div>'; break;
-									case 'right': $return .= '<div style="text-align:right">'.htmlspecialchars($this->cut_channel($channelname)).'</div>'; break;
-									case 'center': $return .= '<div style="text-align:center">'.htmlspecialchars($this->cut_channel($channelname)).'</div>'; break;
+									case 'left': $return .= '<div style="text-align:left">'.$this->cut_channel($channelname).'</div>'; break;
+									case 'right': $return .= '<div style="text-align:right">'.$this->cut_channel($channelname).'</div>'; break;
+									case 'center': $return .= '<div style="text-align:center">'.$this->cut_channel($channelname).'</div>'; break;
 									case 'repeat': 
 										$channelname = str_repeat($channelname, 5);
-										$return .= '<div style="text-align:center">'.htmlspecialchars($this->cut_channel($channelname)).'</div>';
+										$return .= '<div style="text-align:center">'.$this->cut_channel($channelname).'</div>';
 									break;
 								}
 							} else {
@@ -441,7 +502,7 @@ class Ts3Viewer extends gen_class {
 							$return .= $platzhalter;
 							$return .= '<div class="tsleer">&nbsp;</div>';
 							$return .= '<div class="tsca"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/channel.png'.'" alt="'.$this->replace($var['channel_topic']).'" title="'.$this->replace($var['channel_topic']).'" /></div>';
-							$return .= '<div class="tsca">'.htmlspecialchars($this->cut_channel($var['channel_name'],$this->info)).'</div>';
+							$return .= '<div class="tsca">'.$this->cut_channel($var['channel_name'],$this->info).'</div>';
 							if($var['channel_flag_default'] == 1){
 								$return .= '<div class="tsca" style="float:right;"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/home.png'.'" alt="'.$this->replace($var['channel_topic']).'" title="'.$this->replace($var['channel_topic']).'" /></div>';
 							}
@@ -503,7 +564,7 @@ class Ts3Viewer extends gen_class {
 	}
 	
 	protected function autolink_username($strUsername, $strCleanedUsername){
-		$intUserID = register(pdh)->get('user', 'userid', array($strUsername));
+		$intUserID = register('pdh')->get('user', 'userid', array($strUsername));
 		if($intUserID > 0){
 			return '<a href="'.register('routing')->build('user', $strUsername, 'u'.$intUserID).'">'.$strCleanedUsername.'</a>';
 		}
@@ -653,7 +714,7 @@ class Ts3Viewer extends gen_class {
 		//generates html-output for the ts3-banner if selected in options
 		$return = '';
 		if($this->info['banner'] == 1 && isset($this->sinfo['virtualserver_hostbanner_gfx_url']) && $this->sinfo['virtualserver_hostbanner_gfx_url'] != ''){
-			$return .= '<img id="tsbanner" src="'.sanitize($this->replace($this->sinfo['virtualserver_hostbanner_gfx_url'])).'" alt="TS Banner" />';
+			$return .= '<img id="tsbanner" src="'.$this->replace($this->sinfo['virtualserver_hostbanner_gfx_url']).'" alt="TS Banner" />';
 		}
 		return $return;
 	}
@@ -671,7 +732,7 @@ class Ts3Viewer extends gen_class {
 			$return .= '<div id="ts3stats"><h3>'.$this->user->lang('lang_ts3_stats').'</h3><table>';
 			foreach ($this->info['serverinfo'] as $key => $var){
 				if($var['show'] == 1){
-					$return .= '<tr><td style="font-weight:bold">'.sanitize($var['label']).':</td><td>'.sanitize($this->replace($this->sinfo[$key])).'</td></tr>';
+					$return .= '<tr><td style="font-weight:bold">'.sanitize($var['label']).':</td><td>'.$this->replace($this->sinfo[$key]).'</td></tr>';
 				}
 			}
 			$return .= '</table></div>';
