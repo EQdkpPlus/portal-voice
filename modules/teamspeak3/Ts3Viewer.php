@@ -377,7 +377,7 @@ class Ts3Viewer extends gen_class {
 	protected function sendCmd($cmd){
 		if($this->is_ssh){
 			$this->objssh->setTimeout(0.1);
-			$d= $this->objssh->read("test>");
+			$d= $this->objssh->read($this->ssh_user.">");
 			$c = $this->objssh->write($cmd);
 			$this->objssh->setTimeout(0.1);
 			$d= $this->objssh->read();
