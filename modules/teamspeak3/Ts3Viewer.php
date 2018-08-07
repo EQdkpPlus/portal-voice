@@ -192,7 +192,7 @@ class Ts3Viewer extends gen_class {
 		$errno = ''; $errstr = '';
 		
 		if($this->is_ssh){
-			$ssh = new phpseclib\Net\SSH2($this->ip, $this->ssh_port);		
+			$ssh = new phpseclib\Net\SSH2($this->ip, $this->ssh_port, 1);		
 			if (!$ssh->login($this->ssh_user, $this->ssh_pass)) {
 				$this->error[] = 'Can not connect to the server (using SSH with Credentials)';
 				$this->noError = FALSE;
@@ -379,9 +379,9 @@ class Ts3Viewer extends gen_class {
 			$this->objssh->setTimeout(0.1);
 			$d= $this->objssh->read($this->ssh_user.">");
 			$c = $this->objssh->write($cmd);
-			$this->objssh->setTimeout(0.1);
-			$d= $this->objssh->read();
-			
+			$this->objssh->setTimeout(0.5);
+			$d= $this->objssh->read('/.*'.$this->ssh_user.'\@'.$this->port.'/', $this->objssh::READ_REGEX);
+
 			$arrResult = $this->_formatSSH($d);
 			if(count($arrResult) > 1){
 				return $arrResult[1];
