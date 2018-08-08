@@ -380,7 +380,7 @@ class Ts3Viewer extends gen_class {
 			$d= $this->objssh->read($this->ssh_user.">");
 			$c = $this->objssh->write($cmd);
 			$this->objssh->setTimeout(0.5);
-			$d= $this->objssh->read('/.*'.$this->ssh_user.'\@'.$this->port.'/', $this->objssh::READ_REGEX);
+			$d= $this->objssh->read('/.*'.$this->ssh_user.'\@'.$this->port.'/', phpseclib\Net\SSH2::READ_REGEX);
 
 			$arrResult = $this->_formatSSH($d);
 			if(count($arrResult) > 1){
