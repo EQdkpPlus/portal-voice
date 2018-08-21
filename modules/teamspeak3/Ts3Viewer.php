@@ -169,10 +169,10 @@ class Ts3Viewer extends gen_class {
 			$htmlout	.= $this->banner();
 			$htmlout	.= $this->link();
 			$htmlout	.= '</div>';
-			$htmlout	.= '<div id="tscont">';
-			$htmlout	.= '<div class="tsca"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/serverimg.png'.'" alt="'.$this->replace($this->sinfo['virtualserver_welcomemessage']).'" title="'.$this->replace($this->sinfo['virtualserver_welcomemessage']).'"/></div>';
+			$htmlout	.= '<div id="tscont"><div class="tschannel">';
+			$htmlout	.= '<div class="tscaimg"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/serverimg.png'.'" alt="'.$this->replace($this->sinfo['virtualserver_welcomemessage']).'" title="'.$this->replace($this->sinfo['virtualserver_welcomemessage']).'"/></div>';
 			$htmlout	.= '<div class="tsca">'.$this->replace($this->sinfo['virtualserver_name']).'</div>';
-			$htmlout	.= '<div style="clear:both"></div>';
+			$htmlout	.= '<div style="clear:both"></div></div>';
 			$htmlout	.= $this->buildtree('0', '');
 			$htmlout	.= $this->useron();
 			$htmlout	.= $this->build_legend();
@@ -471,6 +471,7 @@ class Ts3Viewer extends gen_class {
 						if (!$this->info['hide_spacer']){
 							$SpacerType = $this->channelSpacerGetType($var['channel_name']);
 							$SpacerAlign = $this->channelSpacerGetAlign($var['channel_name']);
+							$return .= '<div class="tsspacer">';
 							if ($SpacerType == 'custom'){
 								$return .='<div class="tsleer">&nbsp;</div>';
 								$channelname = substr($var['channel_name'], strpos($var['channel_name'], ']')+1);
@@ -492,26 +493,26 @@ class Ts3Viewer extends gen_class {
 									case 'dotline': $return .= '<div style="border-bottom:1px dotted;margin-left:20px; margin-top:2px; margin-bottom:2px; height:2px;">&nbsp;</div>'; break;
 								}
 							}
-							$return .= '<div style="clear:both"></div>'.$this->buildtree($var['cid'],$platzhalter.'<div class="tsleer">&nbsp;</div>');
+							$return .= '<div style="clear:both"></div>'.$this->buildtree($var['cid'],$platzhalter.'<div class="tsleer">&nbsp;</div>').'</div>';
 						}
 						
 					} else {
 			
 					
 						if(($this->info['populated_only'] != '1') or ($this->num_clients_recursive($var['cid']) >= '1')){
-							$return .= $platzhalter;
+							$return .= '<div class="tschannel">'.$platzhalter;
 							$return .= '<div class="tsleer">&nbsp;</div>';
-							$return .= '<div class="tsca"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/channel.png'.'" alt="'.$this->replace($var['channel_topic']).'" title="'.$this->replace($var['channel_topic']).'" /></div>';
+							$return .= '<div class="tscaimg"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/channel.png'.'" alt="'.$this->replace($var['channel_topic']).'" title="'.$this->replace($var['channel_topic']).'" /></div>';
 							$return .= '<div class="tsca">'.$this->cut_channel($var['channel_name'],$this->info).'</div>';
 							if($var['channel_flag_default'] == 1){
-								$return .= '<div class="tsca" style="float:right;"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/home.png'.'" alt="'.$this->replace($var['channel_topic']).'" title="'.$this->replace($var['channel_topic']).'" /></div>';
+								$return .= '<div class="tscaimg" style="float:right;"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/home.png'.'" alt="'.$this->replace($var['channel_topic']).'" title="'.$this->replace($var['channel_topic']).'" /></div>';
 							}
 
 							if($var['channel_flag_password'] == 1){
-								$return .= '<div class="tsca" style="float:right;"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/schloss.png'.'" alt="'.$this->replace($var['channel_topic']).'" title="'.$this->replace($var['channel_topic']).'" /></div>';
+								$return .= '<div class="tscaimg" style="float:right;"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/schloss.png'.'" alt="'.$this->replace($var['channel_topic']).'" title="'.$this->replace($var['channel_topic']).'" /></div>';
 							}
 
-							$return .= '<div style="clear:both"></div>';
+							$return .= '<div style="clear:both"></div></div>';
 						}
 						if($var['total_clients'] >= '1'){
 							if($this->plist != ''){
@@ -529,12 +530,14 @@ class Ts3Viewer extends gen_class {
 										}
 										$g_img = '';
 										$arrIcons = $arrGroups = array();
-										foreach ($u_var['client_servergroups'] as $sg_var) {
-											if (isset($this->sgroups[$sg_var])){
-												if ($this->sgroups[$sg_var]['iconid'] > 0) {
-													$arrIcons[] = $this->sgroups[$sg_var]['iconid'];
-													$arrGroups[(int)$this->sgroups[$sg_var]['iconid']] = $this->replace($this->sgroups[$sg_var]['name']);
-												}								
+										if(is_array($u_var['client_servergroups'])){
+											foreach ($u_var['client_servergroups'] as $sg_var) {
+												if (isset($this->sgroups[$sg_var])){
+													if ($this->sgroups[$sg_var]['iconid'] > 0) {
+														$arrIcons[] = $this->sgroups[$sg_var]['iconid'];
+														$arrGroups[(int)$this->sgroups[$sg_var]['iconid']] = $this->replace($this->sgroups[$sg_var]['name']);
+													}								
+												}
 											}
 										}
 										if (isset($this->cgroups[$u_var['client_channel_group_id']])){
@@ -547,10 +550,10 @@ class Ts3Viewer extends gen_class {
 										$arrIcons = array_unique($arrIcons);
 										foreach($arrIcons as $iconid){
 											if(is_file($this->root_path.'portal/voice/modules/teamspeak3/tsimages/group_icon_'.intval($iconid).'.png')){
-												$g_img .= '<div class="tsca" style="float:right"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/group_icon_'.intval($iconid).'.png" alt="'.$arrGroups[intval($iconid)].'" title="'.$arrGroups[intval($iconid)].'"/></div>';
+												$g_img .= '<div class="tscaimg" style="float:right"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/group_icon_'.intval($iconid).'.png" alt="'.$arrGroups[intval($iconid)].'" title="'.$arrGroups[intval($iconid)].'"/></div>';
 											}
 										}
-										$return .= $platzhalter.'<div class="tsleer">&nbsp;</div><div class="tsleer">&nbsp;</div><div class="tsca"><img src="'.$this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$p_img.'" alt="Player" /></div><div class="tsna">'.$this->autolink_username(trim($u_var['client_nickname']), htmlspecialchars($this->cut_names($u_var['client_nickname'],$this->info), ENT_COMPAT | ENT_HTML401, 'UTF-8')).'</div>'.$g_img.'<div style="clear:both"></div>';
+										$return .= '<div class="tsplayer">'.$platzhalter.'<div class="tsleer">&nbsp;</div><div class="tsleer">&nbsp;</div><div class="tscaimg"><img src="'.$this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.$p_img.'" alt="Player" /></div><div class="tsna">'.$this->autolink_username(trim($u_var['client_nickname']), htmlspecialchars($this->cut_names($u_var['client_nickname'],$this->info), ENT_COMPAT | ENT_HTML401, 'UTF-8')).'</div>'.$g_img.'<div style="clear:both"></div></div>';
 									}
 								}
 							}
@@ -687,12 +690,12 @@ class Ts3Viewer extends gen_class {
 		if($this->info['legend'] == '1'){
 			$return .= '<div id="legend" ><h3>'.$this->user->lang('lang_ts3_legend').'</h3>';
 			foreach ($this->info['sgroup'] as $var) {
-				$return .= '<div class="tsle"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.sanitize($var['p']).'" alt="'.sanitize($var['n']).'" /></div>';
+				$return .= '<div class="tsleimg"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.sanitize($var['p']).'" alt="'.sanitize($var['n']).'" /></div>';
 				$return .= '<div class="tsle">'.sanitize($var['n']).'</div>';
 				$return .= '<div style="clear:both"></div>';
 			}
 			foreach ($this->info['cgroup'] as $var) {
-				$return .= '<div class="tsle"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.sanitize($var['p']).'" alt="'.sanitize($var['n']).'" /></div>';
+				$return .= '<div class="tsleimg"><img src="' . $this->server_path . 'portal/voice/modules/teamspeak3/tsimages/'.''.sanitize($var['p']).'" alt="'.sanitize($var['n']).'" /></div>';
 				$return .= '<div class="tsle">'.sanitize($var['n']).'</div>';
 				$return .= '<div style="clear:both"></div>';
 			}

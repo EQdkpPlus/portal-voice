@@ -30,13 +30,17 @@
 
 
 .tsca{
-    float:left;
-    min-width:20px;
+    -ms-flex: 1;
+    -webkit-box-flex: 1;
+    flex: 1;
+    text-overflow: ellipsis;
 }
 
 .tsna{
-    float:left;
-    min-width:20px;
+    -ms-flex: 1;
+    -webkit-box-flex: 1;
+    flex: 1;
+    text-overflow: ellipsis;
 }
 
 #legend h3{
@@ -72,4 +76,17 @@
 
 #tscont{
     text-align:left;
+}
+
+.tsplayer, .tschannel {
+ -ms-flex-align: center;
+ -webkit-box-align: center;
+ align-items: center;
+ display: -webkit-box;
+ display: -ms-flexbox;
+ display: flex;
+}
+
+.tscaimg {
+	margin-right: 3px;
 }
