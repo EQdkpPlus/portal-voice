@@ -57,7 +57,7 @@ class Ts3Viewer extends gen_class {
 		$this->_config['ts3_sshport'] = $this->config->get('ts3_sshport', 'pmod_'.$this->module_id);
 		$this->_config['ts3_sshuser'] = $this->config->get('ts3_sshuser', 'pmod_'.$this->module_id);
 		$this->_config['ts3_sshpass'] = $this->config->get('ts3_sshpass', 'pmod_'.$this->module_id);
-		
+		$this->_config['ts3_query_type'] = $this->config->get('ts3_query_type', 'pmod_'.$this->module_id);
 		
 		
 		
@@ -96,7 +96,7 @@ class Ts3Viewer extends gen_class {
 		$this->ssh_user = $this->_config('ts3_sshuser');
 		$this->ssh_pass = $this->_config('ts3_sshpass');
 		
-		if($this->ssh_user != "" && $this->ssh_pass != "") $this->is_ssh = true;
+		if($this->ssh_user != "" && $this->ssh_pass != "" && $this->_config['ts3_query_type'] == 'ssh') $this->is_ssh = true;
 		
 		$this->info['hide_spacer'] = !(int)$this->_config('ts3_show_spacer');
 		

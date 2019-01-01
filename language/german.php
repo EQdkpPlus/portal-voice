@@ -81,6 +81,8 @@ $lang = array(
 	'voice_f_ts3_sshuser'			=> 'SSH-Benutzer',
 	'voice_f_help_ts3_sshuser'		=> 'Trage die SSH Zugangsdaten für den TS3-Serverquery ein.',
 	'voice_f_ts3_sshpass'			=> 'Passwort für SSH-Benutzer',
+	'voice_f_ts3_query_type'		=> 'Serverquery-Protokoll',
+	'voice_f_help_ts3_query_type'	=> 'Wenn dein TS3-Server Serverquery über SSH unterstützt, solltest du SSH auswählen.',
 
 	//Ventrilo
 	'ventrilo'						=> 'Ventrilo',
