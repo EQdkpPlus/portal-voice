@@ -75,7 +75,8 @@ class discordviewer extends gen_class {
 						$out .= '<div class="discord-channel-container"><div class="discord-channel">'.sanitize($channel->name).'</div>';
 						$out .= '<div class="member-row">';
 						foreach($objJson->{'members'} as $member) {
-							if($member->channel_id == $channel->id) {
+
+							if(isset($member->channel_id) && $member->channel_id == $channel->id) {
 								$memberVoiceCount++;
 								
 								$out .= '<div class="discord-member">';
@@ -120,7 +121,7 @@ class discordviewer extends gen_class {
 				$memberCount = 0;
 				
 				foreach($objJson->{'members'} as $member) {
-					if(is_null($member->channel_id)) {
+					if(!isset($member->channel_id)) {
 						
 						$memberCount++;
 						
@@ -144,11 +145,11 @@ class discordviewer extends gen_class {
 						
 						$out .= "<div class='discord-voice-status'>";
 						
-						if($member->self_mute && $member->self_mute == "true"){
+						if(isset($member->self_mute) && $member->self_mute && $member->self_mute == "true"){
 							$out .= "&nbsp;<i class='fa fa-microphone-slash'></i>";
 						}
 						
-						if($member->self_deaf && $member->self_deaf == "true"){
+						if(isset($member->self_deaf) && $member->self_deaf && $member->self_deaf == "true"){
 							$out .= "&nbsp;<i class='fa fa-deaf'></i>";
 						}
 						
