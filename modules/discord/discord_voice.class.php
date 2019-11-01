@@ -63,6 +63,10 @@ class discord_voice extends gen_class {
 			    width: 5.5%;
 			    vertical-align: middle;
 			}
+
+			.discord-avatar {
+				width: 34px;
+			}
 				
 			.discord-avatar-img {
 			    border-radius:100%;
