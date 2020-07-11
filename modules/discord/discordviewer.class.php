@@ -80,9 +80,9 @@ class discordviewer extends gen_class {
 								$memberVoiceCount++;
 								
 								$out .= '<div class="discord-member">';
-								$out .= "<div class='discord-avatar'><img class='discord-avatar-img' src=\"".sanitize($member->avatar_url)."?size=32\">";
+								$out .= "<div class='discord-avatar'><img class='discord-avatar-img' src=\"".sanitize($member->avatar_url)."?size=32\" loading=\"lazy\">";
 								
-								$out .= "&nbsp;<img class=\"discord-status\" src=\"".$imgPath.sanitize($member->status).".png\">";
+								$out .= "&nbsp;<img class=\"discord-status\" src=\"".$imgPath.sanitize($member->status).".png\" loading=\"lazy\">";
 								$out .= "</div>";
 								
 								if (isset($member->nick))  {
@@ -126,9 +126,9 @@ class discordviewer extends gen_class {
 						$memberCount++;
 						
 						$out .= '<div class="discord-member">';
-						$out .= "<div class='discord-avatar'><img class='discord-avatar-img' src=\"".sanitize($member->avatar_url)."?size=32\">";
+						$out .= "<div class='discord-avatar'><img class='discord-avatar-img' src=\"".sanitize($member->avatar_url)."?size=32\" loading=\"lazy\">";
 						
-						$out .= "&nbsp;<img class=\"discord-status\" src=\"".$imgPath.sanitize($member->status).".png\">";
+						$out .= "&nbsp;<img class=\"discord-status\" src=\"".$imgPath.sanitize($member->status).".png\" loading=\"lazy\">";
 						$out .= "</div>";
 						
 						if (isset($member->nick))  {

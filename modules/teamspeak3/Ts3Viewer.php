@@ -717,7 +717,7 @@ class Ts3Viewer extends gen_class {
 		//generates html-output for the ts3-banner if selected in options
 		$return = '';
 		if($this->info['banner'] == 1 && isset($this->sinfo['virtualserver_hostbanner_gfx_url']) && $this->sinfo['virtualserver_hostbanner_gfx_url'] != ''){
-			$return .= '<img id="tsbanner" src="'.$this->replace($this->sinfo['virtualserver_hostbanner_gfx_url']).'" alt="TS Banner" />';
+			$return .= '<img id="tsbanner" src="'.$this->replace($this->sinfo['virtualserver_hostbanner_gfx_url']).'" alt="TS Banner" loading="lazy"/>';
 		}
 		return $return;
 	}
