@@ -40,7 +40,7 @@ class discordviewer extends gen_class {
 	
 	function viewer(){
 		$imgPath =  $this->server_path . 'portal/voice/modules/discord/images/';
-		$strURL = "https://discordapp.com/api/guilds/".$this->serverID."/widget.json";
+		$strURL = "https://discord.com/api/guilds/".$this->serverID."/widget.json";
 
 		$out = "";
 		
