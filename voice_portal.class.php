@@ -27,7 +27,7 @@ class voice_portal extends portal_generic {
 	protected static $path		= 'voice';
 	protected static $data		= array(
 		'name'			=> 'Voice Server',
-		'version'		=> '0.2.15',
+		'version'		=> '0.3.0',
 		'author'		=> 'GodMod',
 		'icon'			=> 'fa-microphone',
 		'contact'		=> EQDKP_PROJECT_URL,
@@ -77,8 +77,9 @@ class voice_portal extends portal_generic {
 						'options'	=> array(
 								'telnet'	=> 'Telnet',
 								'ssh'		=> 'SSH',
+						        'web'       => 'WebQuery',
 						),
-						'dependency'=> array('telnet' => array('ts3_telnetport'), 'ssh' => array('ts3_sshport', 'ts3_sshuser', 'ts3_sshpass')),
+						'dependency'=> array('telnet' => array('ts3_telnetport'), 'ssh' => array('ts3_sshport', 'ts3_sshuser', 'ts3_sshpass'), 'web' => array('ts3_query_url', 'ts3_query_api_key')),
 				),
 
 				'ts3_telnetport'=> array(
@@ -96,7 +97,12 @@ class voice_portal extends portal_generic {
 						'type'		=> 'password',
 						'set_value' => true,
 				),
-					
+			    'ts3_query_url'		=> array(
+			        'type'		=> 'text',
+			    ),	
+			    'ts3_query_api_key'	=> array(
+			        'type'		=> 'text',
+			    ),
 				'ts3_cache'		=> array(
 					'type'		=> 'text',
 					'size'		=> '2',

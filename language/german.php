@@ -83,6 +83,10 @@ $lang = array(
 	'voice_f_ts3_sshpass'			=> 'Passwort für SSH-Benutzer',
 	'voice_f_ts3_query_type'		=> 'Serverquery-Protokoll',
 	'voice_f_help_ts3_query_type'	=> 'Wenn dein TS3-Server Serverquery über SSH unterstützt, solltest du SSH auswählen.',
+    'voice_f_ts3_query_url'         => 'WebQuery URL',
+    'voice_f_help_ts3_query_url'    => 'Trage die vollständige URL zum WebQuery ein, inklusive Protokoll und Port, z.B. https://domain.com:10443',
+    'voice_f_ts3_query_api_key'     => 'WebQuery API-Key',
+    'voice_f_help_ts3_query_api_key' => 'Trage den erzeugten API-Key hier ein (Scope=manage)',
 
 	//Ventrilo
 	'ventrilo'						=> 'Ventrilo',

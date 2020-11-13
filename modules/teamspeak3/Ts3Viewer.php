@@ -24,7 +24,7 @@ if ( !defined('EQDKP_INC') ){
 }
 
 class Ts3Viewer extends gen_class {
-	protected $ip, $port, $t_port, $info, $error, $alert, $timeout, $fp, $plist, $clist, $sinfo, $connected, $noError, $cgroups, $sgroups, $ssh_port, $ssh_user, $ssh_pass, $is_ssh, $objssh;
+	protected $ip, $port, $t_port, $info, $error, $alert, $timeout, $fp, $plist, $clist, $sinfo, $connected, $noError, $cgroups, $sgroups, $ssh_port, $ssh_user, $ssh_pass, $query_type, $objssh, $queryURL, $queryApiKey;
 	private $_config = array();
 	private $module_id = false;
 	
@@ -59,24 +59,20 @@ class Ts3Viewer extends gen_class {
 		$this->_config['ts3_sshpass'] = $this->config->get('ts3_sshpass', 'pmod_'.$this->module_id);
 		$this->_config['ts3_query_type'] = $this->config->get('ts3_query_type', 'pmod_'.$this->module_id);
 		
-		
+		$this->_config['ts3_query_url'] = $this->config->get('ts3_query_url', 'pmod_'.$this->module_id);
+		$this->_config['ts3_query_api_key'] = $this->config->get('ts3_query_api_key', 'pmod_'.$this->module_id);
 		
 		// INIT variables
 		$this->connected = FALSE;
 		$this->noError = TRUE;
-		$this->is_ssh = FALSE;
+		$this->query_type = 'telnet';
 		
 		// (timeout in microseconds) 1000000 is 1 second - Default: 500000
-		if (isset($H_MODE) && $H_MODE) {
-			$this->timeout = 500000; // 500000 fixed for hosting-mode
-		} else {
-			$this->timeout = ($this->_config('ts3_timeout') == '') ? 500000 : $this->_config('ts3_timeout');
-		}
+		$this->timeout = ($this->_config('ts3_timeout') == '') ? 500000 : $this->_config('ts3_timeout');
 		
 		// The Server IP (without Port)
 		// Die Server IP (ohne Port)
 		$this->ip = ($this->_config('ts3_ip') == '') ? '127.0.0.1' : $this->_config('ts3_ip');
-
 
 		// The port - Default: 9987
 		// Der Port - Standart: 9987
@@ -96,7 +92,10 @@ class Ts3Viewer extends gen_class {
 		$this->ssh_user = $this->_config('ts3_sshuser');
 		$this->ssh_pass = $this->_config('ts3_sshpass');
 		
-		if($this->ssh_user != "" && $this->ssh_pass != "" && $this->_config['ts3_query_type'] == 'ssh') $this->is_ssh = true;
+		$this->query_type = $this->_config['ts3_query_type'];
+		
+		$this->queryApiKey = $this->_config['ts3_query_api_key'];
+		$this->queryURL = $this->_config['ts3_query_url'];
 		
 		$this->info['hide_spacer'] = !(int)$this->_config('ts3_show_spacer');
 		
@@ -156,7 +155,7 @@ class Ts3Viewer extends gen_class {
 	
 	public function __destruct() {
 		//close the socket
-		fclose($this->fp);
+	    if($this->query_type == 'telnet') fclose($this->fp);
 		parent::__destruct();
 	}
 	
@@ -191,7 +190,7 @@ class Ts3Viewer extends gen_class {
 		// establish connection to ts3
 		$errno = ''; $errstr = '';
 		
-		if($this->is_ssh){
+		if($this->query_type == 'ssh'){
 			$ssh = new phpseclib\Net\SSH2($this->ip, $this->ssh_port, 1);		
 			if (!$ssh->login($this->ssh_user, $this->ssh_pass)) {
 				$this->error[] = 'Can not connect to the server (using SSH with Credentials)';
@@ -203,7 +202,7 @@ class Ts3Viewer extends gen_class {
 				$this->connected = TRUE;
 				return true;	
 			}
-		} else {
+		} elseif($this->query_type == 'telnet') {
 			$this->fp = @fsockopen($this->ip, $this->t_port, $errno, $errstr, 1);
 			if ($this->fp) {
 				stream_set_timeout($this->fp, 0, $this->timeout);
@@ -224,14 +223,17 @@ class Ts3Viewer extends gen_class {
 				return false;
 			}
 			
-		}	
+		} else {
+		    $this->connected = TRUE;
+		    return true;
+		}
 	}
 	
 	public function disconnect(){
 		//send quit-command to the server
-		if($this->is_ssh){
+		if($this->query_type == 'ssh'){
 			$this->objssh->disconnect();
-		} else {
+		} elseif($this->query_type == 'telnet') {
 			$cmd = "quit\n";
 			fputs($this->fp, $cmd);
 		}
@@ -242,7 +244,7 @@ class Ts3Viewer extends gen_class {
 	public function query(){
 		//do a normal query of relevant server information
 		$this->set_sid();
-		$this->query_sinfo();
+		$this->query_sinfo();		
 		$this->query_sgroups();
 		$this->query_cgroups();
 		$this->query_channels();
@@ -250,6 +252,7 @@ class Ts3Viewer extends gen_class {
 	}
 	
 	protected function set_sid(){
+	    if($this->query_type == 'web') return;
 		//sets the sid to use
 		if (!($this->connected and $this->noError)) {return;}
 		if ($this->sid == '-1') {
@@ -269,7 +272,11 @@ class Ts3Viewer extends gen_class {
 		if(!($info = $this->sendCmd($cmd))){
 			$this->error[] = 'No Serverstatus';
 		}else{
-			$this->sinfo = $this->splitInfo($info);
+		    if($this->query_type == 'web'){
+		        $this->sinfo = $info[0];
+		    } else {
+		        $this->sinfo = $this->splitInfo($info);
+		    }
 		}
 	}
 	
@@ -280,10 +287,16 @@ class Ts3Viewer extends gen_class {
 		if(!($clist_t = $this->sendCmd($cmd))){
 			$this->error[] = 'No Channellist';
 		}else{
-			$clist_t = $this->splitInfo2($clist_t);
-			foreach ($clist_t as $var) {
-				$this->clist[] = $this->splitInfo($var);
-			}
+		    if($this->query_type == 'web'){
+		        $this->clist = $clist_t;
+		    } else {
+    		    $clist_t = $this->splitInfo2($clist_t);
+    			foreach ($clist_t as $var) {
+    				$this->clist[] = $this->splitInfo($var);
+    			}
+		    }
+		    
+			
 		}
 	}
 	
@@ -294,26 +307,35 @@ class Ts3Viewer extends gen_class {
 		if(!($plist_t = $this->sendCmd($cmd))){
 			$this->error[] = 'No Playerlist';
 		}else{
-			$plist_t = $this->splitInfo2($plist_t);
-			foreach ($plist_t as $var) {
-				if(strpos($var, 'client_type=0') !== FALSE) {
-					$this->plist[] = $this->splitInfo($var);
-				}
-			}
-			if($this->plist != ''){
-				foreach ($this->plist as $key => $var) {
-					$temp = '';
-					if(strpos($var['client_servergroups'], ',') !== FALSE){
-						$temp = explode(',', $var['client_servergroups']);
-					}else{
-						$temp[0] = $var['client_servergroups'];
-					}
-					$this->plist[$key]['client_servergroups'] = $temp;
-				}
-				usort($this->plist, "ts3_cmp_group");
-				//usort($this->plist, "ts3_cmp_admin");
-			}
+		    if($this->query_type == 'web'){
+		        foreach ($plist_t as $var) {
+		            if($var['client_type'] == "0") {
+		                $this->plist[] = $var;
+		            }
+		        }
 
+		    } else {
+		        $plist_t = $this->splitInfo2($plist_t);
+		        foreach ($plist_t as $var) {
+		            if(strpos($var, 'client_type=0') !== FALSE) {
+		                $this->plist[] = $this->splitInfo($var);
+		            }
+		        }
+		    }
+		}
+		
+		if(is_array($this->plist) && count($this->plist)){
+		    foreach ($this->plist as $key => $var) {
+		        $temp = '';
+		        if(strpos($var['client_servergroups'], ',') !== FALSE){
+		            $temp = explode(',', $var['client_servergroups']);
+		        }else{
+		            $temp[0] = $var['client_servergroups'];
+		        }
+		        $this->plist[$key]['client_servergroups'] = $temp;
+		    }
+		    usort($this->plist, "ts3_cmp_group");
+		    //usort($this->plist, "ts3_cmp_admin");
 		}
 	}
 	
@@ -323,11 +345,17 @@ class Ts3Viewer extends gen_class {
 		if(!($plist_t = $this->sendCmd($cmd))){
 			$this->error[] = 'No Grouplist';
 		}else{
-			$plist_t = $this->splitInfo2($plist_t);
-			foreach ($plist_t as $var) {
-				$arr = $this->splitInfo($var);
-				$this->cgroups[$arr['cgid']] = $arr;
-			}
+		    if($this->query_type == 'web'){
+		        foreach ($plist_t as $var) {
+		            $this->cgroups[$var['cgid']] = $var;
+		        }
+		    } else {
+		        $plist_t = $this->splitInfo2($plist_t);
+		        foreach ($plist_t as $var) {
+		            $arr = $this->splitInfo($var);
+		            $this->cgroups[$arr['cgid']] = $arr;
+		        }
+		    }
 		}
 	}
 	
@@ -337,11 +365,17 @@ class Ts3Viewer extends gen_class {
 		if(!($plist_t = $this->sendCmd($cmd))){
 			$this->error[] = 'No Grouplist';
 		}else{
-			$plist_t = $this->splitInfo2($plist_t);
-			foreach ($plist_t as $var) {
-				$arr = $this->splitInfo($var);
-				$this->sgroups[$arr['sgid']] = $arr;
-			}
+		    if($this->query_type == 'web'){
+		        foreach ($plist_t as $var) {
+		            $this->sgroups[$var['sgid']] = $var;
+		        }
+		    } else {
+		        $plist_t = $this->splitInfo2($plist_t);
+		        foreach ($plist_t as $var) {
+		            $arr = $this->splitInfo($var);
+		            $this->sgroups[$arr['sgid']] = $arr;
+		        }
+		    }
 		}
 	}
 
@@ -375,7 +409,7 @@ class Ts3Viewer extends gen_class {
 	}
 	
 	protected function sendCmd($cmd){
-		if($this->is_ssh){
+	   if($this->query_type == 'ssh'){
 			$this->objssh->setTimeout(0.1);
 			$d= $this->objssh->read($this->ssh_user.">");
 			$c = $this->objssh->write($cmd);
@@ -390,7 +424,27 @@ class Ts3Viewer extends gen_class {
 				$this->noError = FALSE;
 				return false;
 			}
-		}
+	   } elseif($this->query_type == 'web'){
+	       $url = $this->queryURL.'/'.$this->sid.'/';
+	       $cmd = trim($cmd);
+	       	       
+	       $pos = strpos($cmd, " ");
+	       if ($pos !== false) {
+	           $cmd = substr_replace($cmd, "?", $pos, 1);
+	       }
+	       
+	       $params = str_replace(' ', '&', $cmd);
+
+	       $result = register('urlfetcher')->fetch($url.$params, array('x-api-key: '.$this->queryApiKey));
+	       if($result){
+	           $arrResult = json_decode($result, true);
+	           return $arrResult['body'];
+	       }
+	      
+	       $this->error[] = "WebQuery error. Maybe missing manage permissions for API key.";
+	       $this->noError = FALSE;
+	       return false;
+	   }
 		
 		
 		//sends a command to ts3 and gets the answer
